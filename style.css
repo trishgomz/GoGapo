@@ -177,6 +177,11 @@ body {
     color: #0e3b2e;
 }
 
+.popular-items:hover {
+    color: #ffb31b;
+    transition: 0.3s;
+}
+
 .rank {
     width: 40px;
     flex-shrink: 0;

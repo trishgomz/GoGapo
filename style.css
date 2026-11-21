@@ -527,7 +527,6 @@ body {
     color: #507c56;
 }
 
-
 /* ABOUT SECTIONS */
 .about {
     padding: 30px 0px;
@@ -557,86 +556,145 @@ body {
     font-size: 15px;
 }
 
-/* ITO UNG PHONE VERSION CSS SA PINAKA-UNANG GAWA, HINDI KO SIYA GINALAW. IKAW NA BAHALA */
-/* RESPONSIVE DESIGN */
+/* ============================================================
+   GoGapo – phone & tablet fixes (written for your style.css)
+   Keep this file linked AFTER style.css in index.html.
+   It overrides the two old @media (max-width: 768px) blocks.
+   ============================================================ */
+
+/* ---------- Tablets and phones (<= 768px) ---------- */
 @media (max-width: 768px) {
 
+    html { scroll-padding-top: 130px; }   /* anchors don't hide under the taller navbar */
+    body { overflow-x: hidden; }
+
+    /* ---- NAVBAR: logo on top, links in one swipeable row ---- */
     .navbar {
-        width: 95%;
-        padding: 15px;
+        width: 100%;            /* old rule made it 95% and off-center */
+        padding: 8px 0;
+        border-radius: 0;
+    }
+
+    .nav-inner {
         flex-direction: column;
-        gap: 15px;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
     }
 
+    .logo img { height: 40px; }
+
+    .nav-menu {
+        width: 100%;
+        gap: 6px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        list-style: none;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+    .nav-menu::-webkit-scrollbar { display: none; }
+
+    .nav-item { flex-shrink: 0; }
+
+    /* resets the old rule that turned each link into a scroll box */
     .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+        display: inline-block;
+        width: auto;
+        overflow: visible;
+        padding: 8px 14px;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
-    .hero-content {
-        margin-top: 100px;
-    }
-
+    /* ---- HERO ---- */
     .hero {
-        min-height: 650px;
+        height: auto;
+        min-height: 0;
+        padding-bottom: 50px;
+    }
+
+    .hero-content { margin-top: 0;
+                  padding-top: 130px;}   /* clears the fixed navbar */
+
+    .title-group { padding: 10px 16px 20px; }
+
+    .discoverolongapo {
+        height: auto;
+        width: 100%;
+        max-width: 380px;
     }
 
     .search-bar {
-        margin-top: 100px;
+        top: 0;
+        margin-top: 0;
+        width: calc(100% - 32px);
+        padding: 12px 20px;
+        font-size: 16px;        /* stops iPhone from zooming in when tapped */
     }
 
-    .hero-content h2 {
-        font-size: 25px;
+    /* ---- GENERAL SECTIONS ---- */
+    .content-section { padding: 40px 16px; }
+    .content-section h2 { font-size: 24px; }
+
+    /* ---- POPULAR NOW ---- */
+    .popular-list {
+        padding-left: 0;        /* was 100px each side */
+        padding-right: 0;
     }
 
-    .business-section h2,
-    .explore-section h2 {
-        font-size: 27px;
-    }
+    .popular-items { gap: 12px; }
+    .rank { width: 28px; font-size: 24px; }
+    .popular-info { min-width: 0; }
+    .popular-info h3 { font-size: 15px; }
+    .popular-info p  { font-size: 13px; overflow-wrap: anywhere; }
 
-    .explore-grid {
-        grid-template-columns: 1fr;
+    /* ---- NEAR YOU ---- */
+    .location-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
+    .location { width: 100%; }
 
-    .explore-card {
-        font-size: 20px;
+    /* ---- EXPLORE ---- */
+    .explore-button { display: block; }
+    .explore-button ul {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0;
+        list-style: none;
     }
+    .explore-button .label { padding: 8px 14px; font-size: 13px; }
+
+    /* ---- BUSINESS ---- */
+    .checklist {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .business-button {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .business-section ul { padding: 0; }
+    .business-section li { padding: 8px 0; }
+
+    /* ---- ABOUT ---- */
+    .about p { text-align: left; }   /* justified text leaves big gaps on narrow screens */
 }
 
-/* PHONE VERSION */
-@media (max-width: 768px) {
+/* ---------- Small phones (<= 480px) ---------- */
+@media (max-width: 480px) {
 
-    .navbar {
-        flex-direction: column;
-        /* logo on top, links below */
-        gap: 10px;
-        padding: 14px 16px;
-        border-radius: 24px;
-    }
+    .content-section h2 { font-size: 22px; }
 
-    .logo {
-        font-size: 1.3rem;
-        margin: 0;
-    }
+    /* tag drops under the description so nothing gets squeezed */
+    .popular-items { flex-wrap: wrap; }
+    .tag { margin-left: 40px; }
 
-    .nav-links {
-        display: flex;
-        gap: 18px;
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-        justify-content: flex-start;
-        padding-bottom: 4px;
-        scrollbar-width: none;
-    }
-
-    .nav-links::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-links a {
-        font-size: 0.9rem;
-        flex-shrink: 0;
-    }
+    .floppy { padding: 20px 16px; }
+    .floppy p { font-size: 13px; }
 }

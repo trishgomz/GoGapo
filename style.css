@@ -374,6 +374,159 @@ body {
     color: white;
 }
 
+/* PROMOTE SECTION (promote.html) */
+
+.back-pill {
+    display: inline-block;
+    padding: 10px 20px;
+
+    color: #dcecc9;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    background: transparent;
+    border: 2px solid #dcecc9;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.back-pill:hover {
+    background: #dcecc9;
+    color: #0e3b2e;
+}
+
+.navbar .promote-back {
+    color: white;
+    margin-bottom: 0;
+}
+
+.navbar {
+    padding: 10px 50px;
+    background-color: lab(21.59% -19.46 4.25);
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+}
+
+.nav-inner {
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.promote {
+    text-align: center;
+    padding-top: 110px;
+}
+
+.promote-back {
+    display: block;
+    margin-bottom: 20px;
+    text-align: left;
+    color: #174638;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.promote-back:hover {
+    text-decoration: underline;
+}
+
+.promote-intro {
+    max-width: 550px;
+    margin: 0 auto 32px;
+}
+
+.promote-intro .small-title {
+    margin-bottom: 12px;
+}
+
+.promote-intro h2 {
+    margin-bottom: 8px;
+}
+
+.promote-intro p {
+    line-height: 1.5;
+}
+
+.promote-form {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 28px;
+    text-align: left;
+
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(23, 70, 56, 0.12);
+}
+
+.promote-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #174638;
+}
+
+.promote-form input,
+.promote-form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+
+    font-family: inherit;
+    font-size: 15px;
+    color: #123e32;
+
+    border: 1px solid #c9dcb8;
+    border-radius: 12px;
+    background: #f7f8ee;
+}
+
+.promote-form input:focus,
+.promote-form textarea:focus {
+    outline: none;
+    border-color: #286c53;
+    box-shadow: 0 0 0 3px rgba(40, 108, 83, 0.2);
+}
+
+.promote-form textarea {
+    resize: vertical;
+}
+
+.promote-form button {
+    width: 100%;
+    padding: 14px;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+
+    background-color: #174638;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.promote-form button:hover {
+    background-color: #286c53;
+}
+
+.form-note {
+    margin-top: 12px;
+    font-size: 12px;
+    text-align: center;
+    color: #507c56;
+}
+
 
 /* ABOUT SECTIONS */
 .about {

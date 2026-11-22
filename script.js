@@ -1,604 +1,1027 @@
-/* GoGapo – everything runs on free services (no payment):
-   - Browser Geolocation API
-   - OpenStreetMap data through the Overpass API
-   - OpenStreetMap's own embeddable map (inside the popup)
-   - Google Maps links for directions (just URLs)
-   - Optional: any AI service with a free tier for place descriptions (see AI settings) */
+/* IMPORT FONTS*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-(() => {
-    'use strict';
+/* GENERAL SETTINGS */
 
-    /* ========== SETTINGS ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
 
-    // Olongapo City center. Used when the visitor is outside the city
-    // or blocks location access.
-    const CITY = { lat: 14.8292, lon: 120.2828 };
-    const CITY_LIMIT_M = 12000; // farther than this = "not in Olongapo"
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
 
-    const ENDPOINTS = [
-        'https://overpass-api.de/api/interpreter',
-        'https://overpass.private.coffee/api/interpreter',
-        'https://overpass.kumi.systems/api/interpreter'
-    ];
+body {
+    background-color: #dcecc9;
+    color: #123e32;
+    min-height: 100vh;
+    height: auto;
+}
 
-    console.info('GoGapo script v4 loaded');
+/* HIDDEN */
+[hidden] {
+    display: none !important;
+}
 
-    // Promote form (pick ONE, both are free):
-    //  1) Sign up at https://formspree.io, create a form, paste its URL here
-    //     e.g. 'https://formspree.io/f/abcdwxyz'
-    //  2) Or put an email in CONTACT_EMAIL and the form opens the visitor's email app
-    const FORM_ENDPOINT = '';
-    const CONTACT_EMAIL = '';
+:focus-visible {
+    outline: 3px solid #ffb31b;
+    outline-offset: 2px;
+}
 
-    // AI place descriptions (OPTIONAL). Leave these empty and the popup uses the
-    // built-in description made from OpenStreetMap facts (free, always the same).
-    // To turn AI on, fill in all three with any OpenAI-compatible service that has
-    // a free tier, e.g. AI_URL 'https://api.groq.com/openai/v1'.
-    // WARNING: the key is visible to anyone who views your page source, so use a
-    // free-tier key with low limits, never a paid one.
-    const AI_URL = '';
-    const AI_KEY = '';
-    const AI_MODEL = '';
+.section-content {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 1100px;
+}
 
-    /* ========== HELPERS ========== */
+/*CONTENT SECTION*/
 
-    const $ = (sel, root = document) => root.querySelector(sel);
+.content-section {
+    padding: 50px 25px;
+    min-height: 200px;
+    border-top: 1px solid #b8d1a7;
+}
 
-    function el(tag, cls, text) {
-        const node = document.createElement(tag);
-        if (cls) node.className = cls;
-        if (text != null) node.textContent = text; // textContent = safe from HTML injection
-        return node;
+.content-section h2 {
+    font-size: 32px;
+}
+
+/* NAVIGATION BAR */
+
+.navbar {
+    padding: 10px 0;
+    background-color: #0e3b2e;
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+}
+
+.nav-inner {
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+.nav-links {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+
+    padding: 10px 20px;
+    background: transparent;
+    border-radius: 999px;
+    transition: 0.5s ease;
+}
+
+.nav-links:hover {
+    background: #cde8a3;
+    color: #0e3b2e;
+}
+
+.nav-item:last-child .nav-links {
+    background: #ffb31b;
+    color: #0e3b2e;
+    font-weight: 600;
+}
+
+.logo {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: auto;
+    text-decoration: none;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+    display: block;
+}
+
+/* HERO SECTION */
+
+.hero {
+    height: 780px;
+
+    background:
+        linear-gradient(to bottom,
+            #0e3b2e,
+            hsla(162, 61%, 14%, 0.544),
+            rgba(220, 236, 201, 1)),
+        url("OlongapoAerialView.webp");
+
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* MAIN TITLE */
+
+.hero-content {
+    width: 100%;
+    margin: 10px auto 0;
+    text-align: center;
+}
+
+.title-group {
+    padding: 80px;
+    display: flex;
+    justify-content: center;
+}
+
+.discoverolongapo {
+    display: block;
+    height: 600px;
+    width: auto;
+
+}
+
+.search-wrap {
+    position: relative;
+    top: -150px;
+    width: 95%;
+    max-width: 800px;
+    margin: 0 auto;
+    z-index: 60;
+    text-align: left;
+}
+
+.search-bar {
+    display: block;
+    width: 100%;
+    padding: 10px 30px;
+    border-radius: 40px;
+    background-color: #f7f8ee;
+    font-size: 18px;
+    border: none;
+}
+
+.search-suggest {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    list-style: none;
+    background: #f7f8ee;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.suggest-item,
+.suggest-empty {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.suggest-empty { cursor: default; color: #286c53; }
+.suggest-item + .suggest-item { border-top: 1px solid #dcecc9; }
+.suggest-item:hover,
+.suggest-item.active { background: #dcecc9; }
+.suggest-name { font-weight: 600; overflow-wrap: anywhere; }
+
+.suggest-tag {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #ffd98a;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.search-bar:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #ffb31b;
+}
+
+/* POPULAR NOW */
+.popular-section .content-section {
+    border-top: none;
+}
+
+.popular-list {
+    list-style: none;
+    margin-top: 24px;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.popular-items {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid #b8d1a7;
+    text-decoration: none;
+    color: #0e3b2e;
+}
+
+.popular-items:hover {
+    color: #ffb31b;
+    transition: 0.3s;
+}
+
+.rank {
+    width: 40px;
+    flex-shrink: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #286c53;
+}
+
+.popular-list li:first-child .rank {
+    color: #ffb31b;
+}
+
+.popular-info {
+    flex: 1;
+}
+
+.popular-info h3 {
+    font-size: 17px;
+}
+
+.popular-info p {
+    font-size: 14px;
+    color: #0e3b2e;
+}
+
+.tag {
+    flex-shrink: 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #ffd98a;
+    color: #0e3b2e;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* NEAR YOU */
+.nearyou-section {
+    background-color: #f7f8ee;
+}
+
+.location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.location {
+    padding: 10px 20px;
+    border: 2px solid #244e42;
+    border-radius: 999px;
+    background: #244e42;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.location:hover:not(:disabled) {
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: transparent;
+    color: #244e42;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.location:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.nearby-status {
+    margin-top: 16px;
+    min-height: 21px;
+    font-size: 14px;
+    color: #286c53;
+}
+
+.nearby-list {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.nearby-list .distance {
+    width: 80px;
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #286c53;
+}
+
+.nearby-credit {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #507c56;
+}
+
+/* EXPLORE */
+
+.explore-button {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.explore-button ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style: none;
+}
+
+.explore-button li {
+    list-style: none;
+}
+
+.explore-button .label {
+    padding: 10px 20px;
+    border: 2px solid #244e42;
+    border-radius: 999px;
+    background: transparent;
+    color: #244e42;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.explore-button .label:hover {
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #244e42;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.explore-button .label.active {
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #244e42;
+    color: white;
+}
+
+.explore-button .label.active:hover {
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: transparent;
+    color: #244e42;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.explore-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 24px;
+    background: #f7f8ee;
+    color: #123e32;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(23, 70, 56, 0.12);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.explore-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(23, 70, 56, 0.2);
+}
+
+.explore-card img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #cde8a3;
+}
+
+.explore-card .tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 6px 14px;
+    background: #ffb31b;
+    font-size: 13px;
+}
+
+.explore-body {
+    padding: 22px 24px 26px;
+}
+
+.explore-body h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.explore-body p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #286c53;
+}
+
+
+/* PROMOTE YOUR BUSINESS */
+
+.business-section {
+    padding: 0px;
+    min-height: 0px;
+    background-color: #0e3b2e;
+}
+
+.small-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffb31b;
+    margin-bottom: 20px;
+}
+
+.business-section h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.business-description {
+    color: #cde8a3;
+    max-width: 550px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.business-button {
+    display: inline-block;
+    background-color: #ffb31b;
+    color: #0e3b2e;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.business-button:hover {
+    background-color: #cde8a3;
+
+}
+
+.checklist {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.business-text {
+    flex: 1;
+    min-width: 280px;
+}
+
+.business-section ul {
+    padding: 10px;
+    list-style: none;
+}
+
+.business-section li {
+    padding: 14px 18px;
+    color: white;
+}
+
+/* PROMOTE SECTION (promote.html) */
+
+.back-pill {
+    display: inline-block;
+    padding: 10px 20px;
+
+    color: #dcecc9;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    background: transparent;
+    border: 2px solid #dcecc9;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.back-pill:hover {
+    background: #dcecc9;
+    color: #0e3b2e;
+}
+
+.navbar .promote-back {
+    color: white;
+    margin-bottom: 0;
+}
+
+.navbar {
+    padding: 10px 50px;
+    background-color: #0e3b2e;
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+}
+
+.nav-inner {
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.promote {
+    text-align: center;
+    padding-top: 110px;
+}
+
+.promote-back {
+    display: block;
+    margin-bottom: 20px;
+    text-align: left;
+    color: #174638;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.promote-back:hover {
+    text-decoration: underline;
+}
+
+.promote-intro {
+    max-width: 550px;
+    margin: 0 auto 32px;
+}
+
+.promote-intro .small-title {
+    margin-bottom: 12px;
+}
+
+.promote-intro h2 {
+    margin-bottom: 8px;
+}
+
+.promote-intro p {
+    line-height: 1.5;
+}
+
+.promote-form {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 28px;
+    text-align: left;
+
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(23, 70, 56, 0.12);
+}
+
+.promote-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #174638;
+}
+
+.promote-form input,
+.promote-form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+
+    font-family: inherit;
+    font-size: 15px;
+    color: #123e32;
+
+    border: 1px solid #c9dcb8;
+    border-radius: 12px;
+    background: #f7f8ee;
+}
+
+.promote-form input:focus,
+.promote-form textarea:focus {
+    outline: none;
+    border-color: #286c53;
+    box-shadow: 0 0 0 3px rgba(40, 108, 83, 0.2);
+}
+
+.promote-form textarea {
+    resize: vertical;
+}
+
+.promote-form button {
+    width: 100%;
+    padding: 14px;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+
+    background-color: #174638;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.promote-form button:hover {
+    background-color: #286c53;
+}
+
+.promote-form button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* SPAM TRAP */
+.promote-form .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.form-note {
+    margin-top: 12px;
+    font-size: 12px;
+    text-align: center;
+    color: #507c56;
+}
+
+.form-note.success {
+    color: #1b6b3a;
+    font-weight: 600;
+}
+
+.form-note.error {
+    color: #b3261e;
+    font-weight: 600;
+}
+
+/* ABOUT SECTIONS */
+.about {
+    padding: 30px 0px;
+    min-height: auto;
+}
+
+.about h3 {
+    padding: 3px 0px;
+    color: #507c56;
+}
+
+.about p {
+    padding: 3px 0px;
+    color: black;
+    text-align: justify;
+}
+
+/* FLOPPYMEMBERS */
+.floppy {
+    background-color: #0e3b2e;
+    padding: 30px 25px;
+    text-align: center;
+}
+
+.floppy p {
+    color: #f6f1e4;
+    font-size: 15px;
+}
+
+/* PLACE POPUP */
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 59, 46, 0.65);
+}
+
+.modal-card {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: 100%;
+    overflow-y: auto;
+    background: #f7f8ee;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.modal-map {
+    display: block;
+    width: 100%;
+    height: 240px;
+    border: 0;
+    background: #dcecc9;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #17453a;
+    color: white;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: #0e3b2e;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px;
+}
+
+.modal-body h3 {
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+
+.modal-body p {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.modal-body p.loading {
+    opacity: 0.6;
+}
+
+.modal-details {
+    list-style: none;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #b8d1a7;
+    border-radius: 14px;
+    font-size: 14px;
+}
+
+.modal-details li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    overflow-wrap: anywhere;
+}
+
+.modal-details a {
+    color: #244e42;
+    font-weight: 600;
+}
+
+.detail-icon {
+    flex-shrink: 0;
+}
+
+.modal-note {
+    font-size: 12px;
+    color: #507c56;
+}
+
+.modal-directions {
+    align-self: stretch;
+    margin-top: 6px;
+    padding: 14px 20px;
+    border-radius: 999px;
+    background: #17453a;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.modal-directions:hover {
+    background: #ffb31b;
+    color: #0e3b2e;
+}
+
+/* RESPONSIVE */
+
+/* TABLET & PHONE (max 768px) */
+@media (max-width: 768px) {
+
+    html { scroll-padding-top: 130px; }
+    body { overflow-x: hidden; }
+
+    /* NAVBAR */
+    .navbar {
+        width: 100%;
+        padding: 8px 0;
+        border-radius: 0;
     }
 
-    function distanceM(lat1, lon1, lat2, lon2) {
-        const R = 6371000;
-        const rad = (d) => (d * Math.PI) / 180;
-        const a = Math.sin(rad(lat2 - lat1) / 2) ** 2 +
-            Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2;
-        return 2 * R * Math.asin(Math.sqrt(a));
+    .nav-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
     }
 
-    function fmtDist(m) {
-        return m < 1000 ? ${Math.round(m)} m : ${(m / 1000).toFixed(1)} km;
+    .logo img { height: 40px; }
+
+    .nav-menu {
+        width: 100%;
+        gap: 6px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        list-style: none;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+    .nav-menu::-webkit-scrollbar { display: none; }
+
+    .nav-item { flex-shrink: 0; }
+
+    .nav-links {
+        display: inline-block;
+        width: auto;
+        overflow: visible;
+        padding: 8px 14px;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
-    function onceVisible(node, fn, margin = '200px') {
-        if (!node) return;
-        if (!('IntersectionObserver' in window)) { fn(); return; }
-        const io = new IntersectionObserver((entries) => {
-            if (entries.some((e) => e.isIntersecting)) { io.disconnect(); fn(); }
-        }, { rootMargin: margin });
-        io.observe(node);
+    /* HERO */
+    .hero {
+        height: auto;
+        min-height: 0;
+        padding-bottom: 50px;
     }
 
-    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    .hero-content { margin-top: 0;
+                  padding-top: 130px;}
 
-    // Filled in by the popup section below
-    let openPopup = () => {};
+    .title-group { padding: 10px 16px 20px; }
 
-    /* ========== PLACES (Overpass) ========== */
-
-    const LABELS = {
-        restaurant: 'Restaurant', cafe: 'Cafe', fast_food: 'Fast Food', bar: 'Bar', pub: 'Pub',
-        hotel: 'Hotel', hostel: 'Hostel', guest_house: 'Guest House', resort: 'Resort', motel: 'Motel',
-        cinema: 'Cinema', nightclub: 'Nightclub', sports_centre: 'Sports Center',
-        fitness_centre: 'Gym', water_park: 'Water Park', marina: 'Marina', theme_park: 'Theme Park',
-        park: 'Park', beach_resort: 'Beach Resort', attraction: 'Attraction', museum: 'Museum',
-        viewpoint: 'Viewpoint', gallery: 'Gallery'
-    };
-
-    // Returns [category, label]. Categories match the Explore buttons.
-    function classify(t) {
-        const a = t.amenity, tr = t.tourism, l = t.leisure;
-        if (['restaurant', 'cafe', 'fast_food', 'bar', 'pub'].includes(a)) return ['food', LABELS[a]];
-        if (['hotel', 'hostel', 'guest_house', 'resort', 'motel'].includes(tr)) return ['stay', LABELS[tr]];
-        if (['cinema', 'nightclub'].includes(a)) return ['activities', LABELS[a]];
-        if (['sports_centre', 'fitness_centre', 'water_park', 'marina'].includes(l)) return ['activities', LABELS[l]];
-        if (tr === 'theme_park') return ['activities', LABELS[tr]];
-        if (t.natural === 'beach') return ['destinations', 'Beach'];
-        if (l === 'beach_resort' || l === 'park') return ['destinations', LABELS[l]];
-        if (['attraction', 'museum', 'viewpoint', 'gallery'].includes(tr)) return ['destinations', LABELS[tr]];
-        if (t.historic) return ['destinations', 'Landmark'];
-        return ['destinations', 'Place'];
+    .discoverolongapo {
+        height: auto;
+        width: 100%;
+        max-width: 380px;
     }
 
-    function subtitle(t) {
-        if (t.cuisine) {
-            const c = t.cuisine.split(';').map((s) => s.replace(/_/g, ' ')).join(', ');
-            return c.charAt(0).toUpperCase() + c.slice(1);
-        }
-        if (t['addr:street']) return t['addr:street'];
-        return 'Olongapo City';
+    .search-wrap {
+        top: 0;
+        width: calc(100% - 32px);
+    }
+    .search-bar {
+        padding: 12px 20px;
+        font-size: 16px;
     }
 
-    function buildQuery(lat, lon, radius, limit) {
-        const ar = (around:${radius},${lat},${lon});
-        return `[out:json][timeout:30];(
-            nwr["name"]["amenity"~"^(restaurant|cafe|fast_food|bar|pub|cinema|nightclub)$"]${ar};
-            nwr["name"]["tourism"~"^(attraction|hotel|hostel|guest_house|resort|motel|museum|viewpoint|gallery|theme_park)$"]${ar};
-            nwr["name"]["leisure"~"^(park|beach_resort|sports_centre|fitness_centre|water_park|marina)$"]${ar};
-            nwr["name"]["natural"="beach"]${ar};
-            nwr["name"]["historic"]${ar};
-        );out center ${limit};`;
+    /* GENERAL SECTIONS */
+    .content-section { padding: 40px 16px; }
+    .content-section h2 { font-size: 24px; }
+    .promote { padding-top: 100px; }
+
+    /* POPULAR NOW */
+    .popular-list {
+        padding-left: 0;
+        padding-right: 0;
     }
 
-    async function overpass(query) {
-        const key = 'gogapo:' + query;
-        try {
-            const cached = sessionStorage.getItem(key);
-            if (cached) return JSON.parse(cached);
-        } catch (e) { /* storage unavailable, ignore */ }
+    .popular-items { gap: 12px; }
+    .rank { width: 28px; font-size: 24px; }
+    .popular-info { min-width: 0; }
+    .popular-info h3 { font-size: 15px; }
+    .popular-info p  { font-size: 13px; overflow-wrap: anywhere; }
 
-        let lastError;
-        for (let round = 0; round < 2; round++) {
-            for (const url of ENDPOINTS) {
-                const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), 15000);
-                try {
-                    const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(query), signal: ctrl.signal });
-                    if (!res.ok) throw new Error('the map data server answered HTTP ' + res.status);
-                    const json = await res.json();
-                    try { sessionStorage.setItem(key, JSON.stringify(json)); } catch (e) { /* too big, ignore */ }
-                    return json;
-                } catch (err) {
-                    console.warn('Map data request failed at', url, err);
-                    if (err.name === 'AbortError') lastError = new Error('the map data server took too long');
-                    else if (err instanceof SyntaxError) lastError = new Error('the map data server sent an unreadable reply');
-                    else if (err instanceof TypeError) lastError = new Error('could not reach the map data server');
-                    else lastError = err;
-                } finally {
-                    clearTimeout(timer);
-                }
-            }
-            await wait(1500); // busy server: pause, then retry once
-        }
-        throw lastError;
+    /* NEAR YOU */
+    .location-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
+    .location { width: 100%; }
 
-    async function fetchPlaces(lat, lon, radius, limit) {
-        const data = await overpass(buildQuery(lat, lon, radius, limit));
-        const seen = new Set();
-        const out = [];
-        for (const e of data.elements) {
-            const pLat = e.lat ?? e.center?.lat;
-            const pLon = e.lon ?? e.center?.lon;
-            if (pLat == null || pLon == null || !e.tags?.name) continue;
-            const id = e.type + e.id;
-            if (seen.has(id)) continue;
-            seen.add(id);
-            const [cat, label] = classify(e.tags);
-            out.push({ id, name: e.tags.name, cat, label, sub: subtitle(e.tags), lat: pLat, lon: pLon, tags: e.tags });
-        }
-        return out;
+    .nearby-list .distance { width: 60px; font-size: 14px; }
+
+    /* EXPLORE */
+    .explore-button { display: block; }
+    .explore-button ul {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0;
+        list-style: none;
     }
+    .explore-button .label { padding: 8px 14px; font-size: 13px; }
 
-    /* ========== NEAR YOU (list only) ========== */
+    .explore-grid { grid-template-columns: 1fr; gap: 14px; }
 
-    const nearBtn = $('.location');
-    const nearStatus = $('#nearby-status');
-    const nearList = $('#nearby-list');
-
-    function renderNearList(places) {
-        nearList.replaceChildren();
-        places.forEach((p) => {
-            const li = el('li');
-            const a = el('a', 'popular-items');
-            a.href = https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}; // fallback if JS popup fails
-            a.target = '_blank';
-            a.rel = 'noopener';
-            a.addEventListener('click', (e) => {
-                if (e.ctrlKey || e.metaKey || e.shiftKey) return; // let "open in new tab" work
-                e.preventDefault();
-                openPopup(p);
-            });
-
-            const info = el('div', 'popular-info');
-            info.append(el('h3', null, p.name), el('p', null, p.sub));
-
-            a.append(el('span', 'distance', fmtDist(p.dist)), info, el('span', 'tag', p.label));
-            li.appendChild(a);
-            nearList.appendChild(li);
-        });
+    /* BUSINESS */
+    .checklist {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
     }
-
-    async function showNear(lat, lon, note, isUser) {
-        nearStatus.textContent = 'Searching nearby…';
-        nearList.replaceChildren();
-        try {
-            let places = [];
-            for (const r of [1000, 2000, 4000]) {
-                places = await fetchPlaces(lat, lon, r, 150);
-                places.forEach((p) => { p.dist = distanceM(lat, lon, p.lat, p.lon); p.fromUser = isUser; });
-                places.sort((a, b) => a.dist - b.dist);
-                if (places.length >= 😎 break;
-            }
-            places = places.slice(0, 15);
-            if (!places.length) {
-                nearStatus.textContent = ${note} No places found around here yet.;
-                return;
-            }
-            nearStatus.textContent = ${note} Showing the ${places.length} closest places. Tap one for details.;
-            renderNearList(places);
-        } catch (err) {
-            console.error(err);
-            nearStatus.textContent = Could not load nearby places (${err.message}). Check your internet, then tap "Use my location" to try again.;
-        }
+    .business-button {
+        display: block;
+        width: 100%;
+        text-align: center;
     }
+    .business-section ul { padding: 0; }
+    .business-section li { padding: 8px 0; }
 
-    function geoMessage(err) {
-        const fileTip = location.protocol === 'file:'
-            ? ' Tip: browsers often block location on pages opened as a file. Open the site from localhost or HTTPS.'
-            : '';
-        if (err.code === 1) return 'Location access is blocked, so this shows places around Olongapo City center. Allow location for this site in your browser, then try again.' + fileTip;
-        if (err.code === 3) return 'Getting your location timed out, so this shows places around Olongapo City center.' + fileTip;
-        return 'We could not find your location (is location turned on for your device?), so this shows places around Olongapo City center.' + fileTip;
+    /* ABOUT */
+    .about p { text-align: left; }
+
+    /* POPUP */
+    .modal {
+        padding: 0;
+        align-items: flex-end;
     }
-
-    if (nearBtn && nearStatus && nearList) {
-        // Show the city center right away so the section is never empty
-        onceVisible($('#nearest'), () =>
-            showNear(CITY.lat, CITY.lon, 'Showing places around Olongapo City center. Tap "Use my location" for what is closest to you.', false));
-
-        nearBtn.addEventListener('click', () => {
-            if (!('geolocation' in navigator)) {
-                showNear(CITY.lat, CITY.lon, 'Your browser does not support location, so this shows places around Olongapo City center.', false);
-                return;
-            }
-            nearBtn.disabled = true;
-            nearBtn.textContent = 'Locating…';
-            nearStatus.textContent = 'Getting your location…';
-
-            const done = () => { nearBtn.disabled = false; nearBtn.textContent = 'Use my location'; };
-
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    if (distanceM(lat, lon, CITY.lat, CITY.lon) > CITY_LIMIT_M) {
-                        await showNear(CITY.lat, CITY.lon, 'You seem to be outside Olongapo, so this shows places around the city center.', false);
-                    } else {
-                        await showNear(lat, lon, 'Based on your location.', true);
-                    }
-                    done();
-                },
-                async (err) => {
-                    await showNear(CITY.lat, CITY.lon, geoMessage(err), false);
-                    done();
-                },
-                { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
-            );
-        });
+    .modal-card {
+        width: 100%;
+        max-height: 92vh;
+        max-height: 92dvh;
+        border-radius: 24px 24px 0 0;
     }
+    .modal-map { height: 200px; }
+    .modal-close { width: 40px; height: 40px; }
+    .modal-body { padding: 18px 16px 28px; }
+}
 
-    /* ========== EXPLORE (filters + search) ========== */
+/* SMALL PHONE (max 480px) */
+@media (max-width: 480px) {
 
-    const grid = $('#explore-grid');
-    const exploreStatus = $('#explore-status');
-    const moreBtn = $('#explore-more');
-    const filterBtns = document.querySelectorAll('.explore-button .label');
-    const searchBar = $('.search-bar');
-    const PAGE = 12;
+    .content-section h2 { font-size: 22px; }
 
-    let allPlaces = [];
-    let filter = 'all';
-    let query = '';
-    let shown = PAGE;
-    let loading = null;
+    .popular-items { flex-wrap: wrap; }
+    .tag { margin-left: 40px; }
 
-    function setActiveFilter(value) {
-        filter = value;
-        filterBtns.forEach((b) => b.classList.toggle('active', b.dataset.filter === value));
-    }
+    .explore-card .tag,
+    .modal-body .tag { margin-left: 0; }
 
-    function renderExplore() {
-        const q = query.trim().toLowerCase();
-        const matches = allPlaces.filter((p) =>
-            (filter === 'all' || p.cat === filter) && (!q || p.name.toLowerCase().includes(q)));
+    .nearby-list .tag { margin-left: 72px; }
 
-        grid.replaceChildren();
-        matches.slice(0, shown).forEach((p) => {
-            const card = el('article', 'explore-card');
-            card.append(el('span', 'tag', p.label), el('h3', null, p.name), el('p', null, p.sub));
-            const btn = el('button', 'explore-link', 'View details');
-            btn.type = 'button';
-            btn.addEventListener('click', () => openPopup(p));
-            card.appendChild(btn);
-            grid.appendChild(card);
-        });
-
-        if (!matches.length) {
-            exploreStatus.textContent = q
-                ? No places match "${query.trim()}". Try another name or category.
-                : 'No places found in this category yet.';
-        } else {
-            exploreStatus.textContent = q
-                ? ${matches.length} result${matches.length === 1 ? '' : 's'} for "${query.trim()}"
-                : ${matches.length} places in Olongapo;
-        }
-        moreBtn.hidden = matches.length <= shown;
-    }
-
-    function loadExplore() {
-        if (loading) return loading;
-        exploreStatus.textContent = 'Loading places…';
-        loading = fetchPlaces(CITY.lat, CITY.lon, 8000, 500)
-            .then((list) => {
-                allPlaces = list.sort((a, b) => a.name.localeCompare(b.name));
-                renderExplore();
-            })
-            .catch((err) => {
-                console.error(err);
-                loading = null;
-                exploreStatus.textContent = Could not load places (${err.message}). Check your internet and refresh the page.;
-            });
-        return loading;
-    }
-
-    if (grid && exploreStatus && moreBtn) {
-        onceVisible($('#recommendation'), loadExplore, '300px');
-
-        filterBtns.forEach((btn) => btn.addEventListener('click', () => {
-            setActiveFilter(btn.dataset.filter || 'all');
-            shown = PAGE;
-            loadExplore().then(renderExplore);
-        }));
-
-        moreBtn.addEventListener('click', () => { shown += PAGE; renderExplore(); });
-
-        // Hero search: press Enter to search all Olongapo places
-        if (searchBar) {
-            searchBar.addEventListener('keydown', (e) => {
-                if (e.key !== 'Enter') return;
-                query = searchBar.value;
-                shown = PAGE;
-                setActiveFilter('all');
-                $('#recommendation').scrollIntoView({ behavior: 'smooth' });
-                loadExplore().then(renderExplore);
-            });
-            searchBar.addEventListener('input', () => {
-                if (searchBar.value === '' && query) { query = ''; if (allPlaces.length) renderExplore(); }
-            });
-        }
-    }
-
-    /* ========== DESCRIPTIONS ========== */
-
-    const NOUNS = { 'Fast Food': 'fast food restaurant', 'Place': 'local spot', 'Gym': 'gym' };
-    const CLOSERS = {
-        food: 'A good stop for a bite while you explore the city.',
-        stay: 'A handy base for exploring the city.',
-        activities: 'A fun addition to your day out.',
-        destinations: 'Worth a stop while you are in the area.'
-    };
-
-    // Built only from facts in OpenStreetMap, so it never invents anything.
-    function templateDescribe(p) {
-        const t = p.tags || {};
-        if (t.description) return t.description; // written by OpenStreetMap mappers
-
-        const noun = NOUNS[p.label] || p.label.toLowerCase();
-        const article = /^[aeiou]/.test(noun) ? 'an' : 'a';
-        const street = t['addr:street'];
-        const parts = [`${p.name} is ${article} ${noun}${street ? ' on ' + street : ''} in Olongapo City.`];
-
-        let extras = 0;
-        if (t.cuisine) {
-            parts.push('Cuisine: ' + t.cuisine.split(';').map((s) => s.replace(/_/g, ' ')).join(', ') + '.');
-            extras++;
-        }
-        if (t.opening_hours && t.opening_hours.length <= 60) { parts.push(Hours: ${t.opening_hours}.); extras++; }
-        const phone = t.phone || t['contact:phone'];
-        if (phone) { parts.push(Phone: ${phone}.); extras++; }
-        if (p.dist != null) {
-            parts.push(p.fromUser
-                ? About ${fmtDist(p.dist)} from your location.
-                : About ${fmtDist(p.dist)} from Olongapo City center.);
-        }
-        if (!extras) parts.push(CLOSERS[p.cat] || CLOSERS.destinations);
-        return parts.join(' ');
-    }
-
-    function factsFor(p) {
-        const t = p.tags || {};
-        const lines = [`Name: ${p.name}`, Type: ${p.label}, 'Location: Olongapo City, Zambales, Philippines'];
-        if (t['addr:street']) lines.push(Street: ${t['addr:street']});
-        if (t.cuisine) lines.push(Cuisine: ${t.cuisine.replace(/[;_]/g, ' ')});
-        if (t.opening_hours) lines.push(Opening hours: ${t.opening_hours});
-        if (t.description) lines.push(Notes: ${t.description});
-        return lines.join('\n');
-    }
-
-    const aiEnabled = () => Boolean(AI_URL && AI_KEY && AI_MODEL);
-
-    async function aiDescribe(p) {
-        const cacheKey = 'gogapo:desc:' + p.id;
-        try {
-            const cached = localStorage.getItem(cacheKey); // same place = same text next time
-            if (cached) return cached;
-        } catch (e) { /* ignore */ }
-
-        const res = await fetch(AI_URL.replace(/\/$/, '') + '/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AI_KEY },
-            body: JSON.stringify({
-                model: AI_MODEL,
-                temperature: 0.3,
-                max_tokens: 120,
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You write short, friendly place descriptions for a tourism guide to Olongapo City, Philippines. ' +
-                            'Write 2 sentences, at most 45 words. Use ONLY the facts provided. Never invent menu items, ' +
-                            'history, prices, ratings, awards or opening years. If the facts are thin, keep it short and general.'
-                    },
-                    { role: 'user', content: factsFor(p) }
-                ]
-            })
-        });
-        if (!res.ok) throw new Error('AI HTTP ' + res.status);
-        const json = await res.json();
-        const text = json.choices?.[0]?.message?.content?.trim();
-        if (!text) throw new Error('AI returned nothing');
-        try { localStorage.setItem(cacheKey, text); } catch (e) { /* ignore */ }
-        return text;
-    }
-
-    /* ========== PLACE POPUP ========== */
-
-    const modal = $('#place-modal');
-    if (modal) {
-        const mTitle = $('#modal-title');
-        const mTag = $('#modal-tag');
-        const mDesc = $('#modal-desc');
-        const mNote = $('#modal-note');
-        const mMap = $('#modal-map');
-        const mDir = $('#modal-directions');
-        let lastFocus = null;
-        let openToken = 0; // ignores slow lookups from a popup that was already closed
-
-        // Look a place up by name in OpenStreetMap (only for Popular Now items without data-lat/data-lon)
-        async function findByName(term) {
-            const clean = term.replace(/[^\w\s'-]/g, '');
-            const q = [out:json][timeout:25];nwr["name"~"${clean}",i](around:10000,${CITY.lat},${CITY.lon});out center 10;;
-            const data = await overpass(q);
-            const hit = data.elements.find((e) => (e.lat ?? e.center?.lat) != null);
-            return hit ? { lat: hit.lat ?? hit.center.lat, lon: hit.lon ?? hit.center.lon } : null;
-        }
-
-        function directionsFor(p, pos) {
-            const dest = pos ? ${pos.lat},${pos.lon} : encodeURIComponent(p.query || ${p.name} Olongapo City);
-            return https://www.google.com/maps/dir/?api=1&destination=${dest};
-        }
-
-        // OpenStreetMap's official embed: free, no key, no tiles for us to manage
-        function showMap(pos) {
-            const dLon = 0.005, dLat = 0.003;
-            const bbox = [pos.lon - dLon, pos.lat - dLat, pos.lon + dLon, pos.lat + dLat].join('%2C');
-            mMap.src = https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${pos.lat}%2C${pos.lon};
-            mMap.hidden = false;
-        }
-
-        async function loadMap(p, token) {
-            let pos = p.lat != null && p.lon != null ? { lat: p.lat, lon: p.lon } : null;
-            if (!pos && p.osm) {
-                try { pos = await findByName(p.osm); } catch (err) { console.error(err); }
-            }
-            if (token !== openToken || !pos) return;
-            showMap(pos);
-            mDir.href = directionsFor(p, pos);
-        }
-
-        async function loadAi(p, token) {
-            mDesc.classList.add('loading');
-            try {
-                const text = await aiDescribe(p);
-                if (token !== openToken) return;
-                mDesc.textContent = text;
-                mNote.hidden = false;
-            } catch (err) {
-                console.warn('AI description failed, keeping the built-in one.', err);
-            } finally {
-                if (token === openToken) mDesc.classList.remove('loading');
-            }
-        }
-
-        openPopup = (p) => {
-            const token = ++openToken;
-            mTitle.textContent = p.name;
-            mTag.textContent = p.label || '';
-            mTag.hidden = !p.label;
-            mDesc.textContent = p.desc || templateDescribe(p);
-            mDesc.classList.remove('loading');
-            mNote.hidden = true;
-            mMap.hidden = true;
-            mMap.src = 'about:blank';
-            mDir.href = directionsFor(p, p.lat != null ? p : null);
-
-            lastFocus = document.activeElement;
-            modal.hidden = false;
-            document.body.classList.add('modal-open');
-            $('.modal-close', modal).focus();
-
-            loadMap(p, token);
-            // Hand-written descriptions (Popular Now) are never replaced by AI
-            if (!p.desc && aiEnabled()) loadAi(p, token);
-        };
-
-        function closePopup() {
-            openToken++;
-            modal.hidden = true;
-            mMap.src = 'about:blank';
-            document.body.classList.remove('modal-open');
-            if (lastFocus) lastFocus.focus();
-        }
-
-        // Popular Now items
-        const popularList = $('.popular-list');
-        if (popularList) {
-            popularList.addEventListener('click', (e) => {
-                const link = e.target.closest('.popular-items');
-                if (!link || e.ctrlKey || e.metaKey || e.shiftKey) return;
-                e.preventDefault();
-                const d = link.dataset;
-                openPopup({
-                    id: 'pop:' + d.query,
-                    name: link.querySelector('h3').textContent,
-                    label: link.querySelector('.tag')?.textContent || '',
-                    desc: d.desc || '',
-                    query: d.query,
-                    osm: d.osm,
-                    lat: d.lat ? parseFloat(d.lat) : null,
-                    lon: d.lon ? parseFloat(d.lon) : null
-                });
-            });
-        }
-
-        modal.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closePopup(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closePopup(); });
-    }
-
-    /* ========== PROMOTE FORM ========== */
-
-    const form = $('.promote-form');
-    if (form) {
-        const note = $('.form-note', form);
-        const submit = $('button[type="submit"]', form);
-        const defaultNote = note.textContent;
-
-        const say = (msg, type) => { note.textContent = msg; note.className = 'form-note ' + (type || ''); };
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = new FormData(form);
-            if (data.get('_gotcha')) return; // spam trap
-
-            if (FORM_ENDPOINT) {
-                submit.disabled = true;
-                say('Sending…');
-                try {
-                    const res = await fetch(FORM_ENDPOINT, {
-                        method: 'POST', body: data, headers: { Accept: 'application/json' }
-                    });
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    form.reset();
-                    say('Thanks! Your request was sent. We will email you after we review it.', 'success');
-                } catch (err) {
-                    console.error(err);
-                    say('Something went wrong. Please try again in a moment.', 'error');
-                } finally {
-                    submit.disabled = false;
-                }
-            } else if (CONTACT_EMAIL) {
-                const body = Array.from(data)
-                    .filter(([k]) => k !== '_gotcha')
-                    .map(([k, v]) => ${k.replace(/_/g, ' ')}: ${v}).join('\n');
-                window.location.href = mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('GoGapo business request')}&body=${encodeURIComponent(body)};
-                say('Your email app should open with the details filled in. Press send to finish.', 'success');
-            } else {
-                say('This form is not connected yet. Set FORM_ENDPOINT or CONTACT_EMAIL at the top of script.js.', 'error');
-            }
-        });
-
-        form.addEventListener('input', () => { if (note.textContent !== defaultNote) say(defaultNote); });
-    }
-})();
+    .floppy { padding: 20px 16px; }
+    .floppy p { font-size: 13px; }
+}

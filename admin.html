@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>GoGapo Admin | Explore</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="admin">
+
+    <nav class="navbar">
+        <div class="section-content nav-inner">
+            <a href="index.html" class="logo"><img src="Copy%20of%20LogoGoGapo.png" alt="GoGapo"></a>
+            <div class="admin-nav">
+                <span class="admin-badge">Admin</span>
+                <a href="index.html#recommendation" class="nav-links" target="_blank" rel="noopener">View site</a>
+                <button type="button" class="nav-links admin-linkbtn" id="logout" hidden>Log out</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LOGIN -->
+    <main class="admin-main" id="login-view">
+        <form class="admin-login" id="login-form">
+            <h2>Admin login</h2>
+            <p>Enter the admin passcode to manage the Explore section.</p>
+            <input type="password" id="passcode" placeholder="Passcode" autocomplete="current-password" aria-label="Passcode" required>
+            <p class="admin-error" id="login-error" role="alert"></p>
+            <button type="submit" class="admin-btn primary">Log in</button>
+        </form>
+    </main>
+
+    <!-- DASHBOARD -->
+    <main class="admin-main" id="dash-view" hidden>
+        <div class="section-content">
+            <div class="admin-head">
+                <div>
+                    <h2>Explore</h2>
+                    <p>Find places worth visiting in Olongapo.</p>
+                </div>
+                <button type="button" class="admin-btn primary" id="add-btn">+ Add place</button>
+            </div>
+
+            <div class="explore-button">
+                <ul id="admin-filters">
+                    <li><button class="label active" type="button" data-filter="all">All</button></li>
+                    <li><button class="label" type="button" data-filter="destinations">Destinations</button></li>
+                    <li><button class="label" type="button" data-filter="food">Food</button></li>
+                    <li><button class="label" type="button" data-filter="stay">Hotels &amp; Services</button></li>
+                    <li><button class="label" type="button" data-filter="activities">Activities</button></li>
+                </ul>
+            </div>
+
+            <p class="admin-note" id="admin-status" role="status" aria-live="polite"></p>
+            <div class="explore-grid" id="admin-grid"></div>
+
+            <div class="admin-foot">
+                <p>Changes save automatically in this browser and appear on the Explore section of the site right away.</p>
+                <button type="button" class="admin-btn ghost" id="reset-btn">Reset to original cards</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ADD / EDIT -->
+    <div class="modal" id="edit-modal" hidden>
+        <div class="modal-backdrop" data-close></div>
+        <form class="modal-card admin-form" id="edit-form" role="dialog" aria-modal="true" aria-labelledby="form-title">
+            <button class="modal-close" type="button" aria-label="Close" data-close>×</button>
+            <div class="modal-body">
+                <h3 id="form-title">Add place</h3>
+
+                <div class="admin-preview" id="img-preview">
+                    <img alt="" id="img-el" hidden>
+                    <span id="img-empty">No image yet</span>
+                </div>
+                <label class="admin-file">
+                    <input type="file" id="img-file" accept="image/*">
+                    <span class="admin-btn ghost">Upload image</span>
+                </label>
+
+                <label>Name
+                    <input type="text" id="f-name" required maxlength="60">
+                </label>
+                <label>Category
+                    <select id="f-cat">
+                        <option value="destinations">Destinations</option>
+                        <option value="food">Food</option>
+                        <option value="stay">Hotels &amp; Services</option>
+                        <option value="activities">Activities</option>
+                    </select>
+                </label>
+                <label>Badge text <small>(the yellow label on the card)</small>
+                    <input type="text" id="f-tag" required maxlength="24">
+                </label>
+                <label>Description
+                    <textarea id="f-blurb" rows="3" required maxlength="200"></textarea>
+                </label>
+                <label>Map search <small>(used for the map and directions, e.g. "Rizal Triangle, Olongapo City")</small>
+                    <input type="text" id="f-query" maxlength="100">
+                </label>
+                <label class="admin-check">
+                    <input type="checkbox" id="f-visible" checked> Show on the site
+                </label>
+
+                <p class="admin-error" id="form-error" role="alert"></p>
+                <div class="admin-actions">
+                    <button type="button" class="admin-btn ghost" data-close>Cancel</button>
+                    <button type="submit" class="admin-btn primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="admin.js" defer></script>
+</body>
+
+</html>

@@ -277,6 +277,34 @@
     const exploreStatus = $('#explore-status');
     const filterBtns = document.querySelectorAll('.explore-button .label');
     const searchBar = $('.search-bar');
+    // Cards managed from /admin.html (saved in this browser). Falls back to the HTML cards.
+    if (grid) {
+        try {
+            const saved = JSON.parse(localStorage.getItem('gogapo:explore') || 'null');
+            if (Array.isArray(saved)) {
+                grid.replaceChildren();
+                saved.filter((p) => p.visible !== false).forEach((p) => {
+                    const a = el('a', 'explore-card');
+                    a.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.query || p.name + ' Olongapo City');
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.dataset.cat = p.cat;
+                    a.dataset.query = p.query || p.name + ', Olongapo City';
+                    a.dataset.osm = '';
+                    a.dataset.desc = p.desc || p.blurb || '';
+                    const img = el('img');
+                    img.src = p.img || '';
+                    img.alt = p.name;
+                    img.loading = 'lazy';
+                    const body = el('div', 'explore-body');
+                    body.append(el('h3', null, p.name), el('p', null, p.blurb || ''));
+                    a.append(img, el('span', 'tag', p.tag), body);
+                    grid.appendChild(a);
+                });
+            }
+        } catch (e) { console.warn('Could not load saved Explore cards.', e); }
+    }
+
     const cards = grid ? Array.from(grid.children) : [];
 
     let filter = 'all';

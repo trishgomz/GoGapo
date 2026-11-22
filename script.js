@@ -1,1027 +1,737 @@
-/* IMPORT FONTS*/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* GoGapo */
 
-/* GENERAL SETTINGS */
+(() => {
+    'use strict';
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
+    /* ========== SETTINGS ========== */
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px;
-}
+    // Olongapo City center (fallback location)
+    const CITY = { lat: 14.8292, lon: 120.2828 };
+    const CITY_LIMIT_M = 12000; // meters
 
-body {
-    background-color: #dcecc9;
-    color: #123e32;
-    min-height: 100vh;
-    height: auto;
-}
+    const ENDPOINTS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.private.coffee/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter'
+    ];
 
-/* HIDDEN */
-[hidden] {
-    display: none !important;
-}
+   
+    
 
-:focus-visible {
-    outline: 3px solid #ffb31b;
-    outline-offset: 2px;
-}
+    // 
+    const AI_KEY = '';
+    const AI_MODEL = '';
 
-.section-content {
-    width: 100%;
-    margin: 0 auto;
-    max-width: 1100px;
-}
+    /* ========== HELPERS ========== */
 
-/*CONTENT SECTION*/
+    const $ = (sel, root = document) => root.querySelector(sel);
 
-.content-section {
-    padding: 50px 25px;
-    min-height: 200px;
-    border-top: 1px solid #b8d1a7;
-}
-
-.content-section h2 {
-    font-size: 32px;
-}
-
-/* NAVIGATION BAR */
-
-.navbar {
-    padding: 10px 0;
-    background-color: #0e3b2e;
-    width: 100%;
-    position: fixed;
-    z-index: 100;
-    top: 0;
-}
-
-.nav-inner {
-    display: flex;
-    padding: 5px;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 20px;
-    list-style: none;
-}
-
-.nav-links {
-    display: inline-block;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-
-    padding: 10px 20px;
-    background: transparent;
-    border-radius: 999px;
-    transition: 0.5s ease;
-}
-
-.nav-links:hover {
-    background: #cde8a3;
-    color: #0e3b2e;
-}
-
-.nav-item:last-child .nav-links {
-    background: #ffb31b;
-    color: #0e3b2e;
-    font-weight: 600;
-}
-
-.logo {
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: auto;
-    text-decoration: none;
-}
-
-.logo img {
-    height: 50px;
-    width: auto;
-    display: block;
-}
-
-/* HERO SECTION */
-
-.hero {
-    height: 780px;
-
-    background:
-        linear-gradient(to bottom,
-            #0e3b2e,
-            hsla(162, 61%, 14%, 0.544),
-            rgba(220, 236, 201, 1)),
-        url("OlongapoAerialView.webp");
-
-    background-size: cover;
-    background-position: center;
-    position: relative;
-}
-
-/* MAIN TITLE */
-
-.hero-content {
-    width: 100%;
-    margin: 10px auto 0;
-    text-align: center;
-}
-
-.title-group {
-    padding: 80px;
-    display: flex;
-    justify-content: center;
-}
-
-.discoverolongapo {
-    display: block;
-    height: 600px;
-    width: auto;
-
-}
-
-.search-wrap {
-    position: relative;
-    top: -150px;
-    width: 95%;
-    max-width: 800px;
-    margin: 0 auto;
-    z-index: 60;
-    text-align: left;
-}
-
-.search-bar {
-    display: block;
-    width: 100%;
-    padding: 10px 30px;
-    border-radius: 40px;
-    background-color: #f7f8ee;
-    font-size: 18px;
-    border: none;
-}
-
-.search-suggest {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(100% + 8px);
-    list-style: none;
-    background: #f7f8ee;
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    max-height: 340px;
-    overflow-y: auto;
-}
-
-.suggest-item,
-.suggest-empty {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 24px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.suggest-empty { cursor: default; color: #286c53; }
-.suggest-item + .suggest-item { border-top: 1px solid #dcecc9; }
-.suggest-item:hover,
-.suggest-item.active { background: #dcecc9; }
-.suggest-name { font-weight: 600; overflow-wrap: anywhere; }
-
-.suggest-tag {
-    flex-shrink: 0;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: #ffd98a;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.search-bar:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px #ffb31b;
-}
-
-/* POPULAR NOW */
-.popular-section .content-section {
-    border-top: none;
-}
-
-.popular-list {
-    list-style: none;
-    margin-top: 24px;
-    padding-left: 100px;
-    padding-right: 100px;
-}
-
-.popular-items {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid #b8d1a7;
-    text-decoration: none;
-    color: #0e3b2e;
-}
-
-.popular-items:hover {
-    color: #ffb31b;
-    transition: 0.3s;
-}
-
-.rank {
-    width: 40px;
-    flex-shrink: 0;
-    font-size: 32px;
-    font-weight: 700;
-    color: #286c53;
-}
-
-.popular-list li:first-child .rank {
-    color: #ffb31b;
-}
-
-.popular-info {
-    flex: 1;
-}
-
-.popular-info h3 {
-    font-size: 17px;
-}
-
-.popular-info p {
-    font-size: 14px;
-    color: #0e3b2e;
-}
-
-.tag {
-    flex-shrink: 0;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: #ffd98a;
-    color: #0e3b2e;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-/* NEAR YOU */
-.nearyou-section {
-    background-color: #f7f8ee;
-}
-
-.location-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.location {
-    padding: 10px 20px;
-    border: 2px solid #244e42;
-    border-radius: 999px;
-    background: #244e42;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.location:hover:not(:disabled) {
-    padding: 10px 20px;
-    border-radius: 999px;
-    background: transparent;
-    color: #244e42;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.location:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-.nearby-status {
-    margin-top: 16px;
-    min-height: 21px;
-    font-size: 14px;
-    color: #286c53;
-}
-
-.nearby-list {
-    list-style: none;
-    margin-top: 10px;
-}
-
-.nearby-list .distance {
-    width: 80px;
-    flex-shrink: 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #286c53;
-}
-
-.nearby-credit {
-    margin-top: 16px;
-    font-size: 12px;
-    color: #507c56;
-}
-
-/* EXPLORE */
-
-.explore-button {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.explore-button ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    list-style: none;
-}
-
-.explore-button li {
-    list-style: none;
-}
-
-.explore-button .label {
-    padding: 10px 20px;
-    border: 2px solid #244e42;
-    border-radius: 999px;
-    background: transparent;
-    color: #244e42;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.explore-button .label:hover {
-    padding: 10px 20px;
-    border-radius: 999px;
-    background: #244e42;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.explore-button .label.active {
-    padding: 10px 20px;
-    border-radius: 999px;
-    background: #244e42;
-    color: white;
-}
-
-.explore-button .label.active:hover {
-    padding: 10px 20px;
-    border-radius: 999px;
-    background: transparent;
-    color: #244e42;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.explore-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 16px;
-}
-
-.explore-card {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    border-radius: 24px;
-    background: #f7f8ee;
-    color: #123e32;
-    text-decoration: none;
-    box-shadow: 0 6px 18px rgba(23, 70, 56, 0.12);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.explore-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(23, 70, 56, 0.2);
-}
-
-.explore-card img {
-    display: block;
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    background: #cde8a3;
-}
-
-.explore-card .tag {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    padding: 6px 14px;
-    background: #ffb31b;
-    font-size: 13px;
-}
-
-.explore-body {
-    padding: 22px 24px 26px;
-}
-
-.explore-body h3 {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.explore-body p {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #286c53;
-}
-
-
-/* PROMOTE YOUR BUSINESS */
-
-.business-section {
-    padding: 0px;
-    min-height: 0px;
-    background-color: #0e3b2e;
-}
-
-.small-title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #ffb31b;
-    margin-bottom: 20px;
-}
-
-.business-section h2 {
-    color: white;
-    margin-bottom: 20px;
-}
-
-.business-description {
-    color: #cde8a3;
-    max-width: 550px;
-    line-height: 1.5;
-    margin-bottom: 20px;
-}
-
-.business-button {
-    display: inline-block;
-    background-color: #ffb31b;
-    color: #0e3b2e;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 999px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.business-button:hover {
-    background-color: #cde8a3;
-
-}
-
-.checklist {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.business-text {
-    flex: 1;
-    min-width: 280px;
-}
-
-.business-section ul {
-    padding: 10px;
-    list-style: none;
-}
-
-.business-section li {
-    padding: 14px 18px;
-    color: white;
-}
-
-/* PROMOTE SECTION (promote.html) */
-
-.back-pill {
-    display: inline-block;
-    padding: 10px 20px;
-
-    color: #dcecc9;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-
-    background: transparent;
-    border: 2px solid #dcecc9;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.back-pill:hover {
-    background: #dcecc9;
-    color: #0e3b2e;
-}
-
-.navbar .promote-back {
-    color: white;
-    margin-bottom: 0;
-}
-
-.navbar {
-    padding: 10px 50px;
-    background-color: #0e3b2e;
-    width: 100%;
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    left: 0;
-}
-
-.nav-inner {
-    display: flex;
-    padding: 5px;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.promote {
-    text-align: center;
-    padding-top: 110px;
-}
-
-.promote-back {
-    display: block;
-    margin-bottom: 20px;
-    text-align: left;
-    color: #174638;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.promote-back:hover {
-    text-decoration: underline;
-}
-
-.promote-intro {
-    max-width: 550px;
-    margin: 0 auto 32px;
-}
-
-.promote-intro .small-title {
-    margin-bottom: 12px;
-}
-
-.promote-intro h2 {
-    margin-bottom: 8px;
-}
-
-.promote-intro p {
-    line-height: 1.5;
-}
-
-.promote-form {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 28px;
-    text-align: left;
-
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(23, 70, 56, 0.12);
-}
-
-.promote-form label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
-    font-weight: bold;
-    color: #174638;
-}
-
-.promote-form input,
-.promote-form textarea {
-    display: block;
-    width: 100%;
-    margin-bottom: 16px;
-    padding: 12px 14px;
-
-    font-family: inherit;
-    font-size: 15px;
-    color: #123e32;
-
-    border: 1px solid #c9dcb8;
-    border-radius: 12px;
-    background: #f7f8ee;
-}
-
-.promote-form input:focus,
-.promote-form textarea:focus {
-    outline: none;
-    border-color: #286c53;
-    box-shadow: 0 0 0 3px rgba(40, 108, 83, 0.2);
-}
-
-.promote-form textarea {
-    resize: vertical;
-}
-
-.promote-form button {
-    width: 100%;
-    padding: 14px;
-
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-
-    background-color: #174638;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.promote-form button:hover {
-    background-color: #286c53;
-}
-
-.promote-form button:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-/* SPAM TRAP */
-.promote-form .hp-field {
-    position: absolute;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-}
-
-.form-note {
-    margin-top: 12px;
-    font-size: 12px;
-    text-align: center;
-    color: #507c56;
-}
-
-.form-note.success {
-    color: #1b6b3a;
-    font-weight: 600;
-}
-
-.form-note.error {
-    color: #b3261e;
-    font-weight: 600;
-}
-
-/* ABOUT SECTIONS */
-.about {
-    padding: 30px 0px;
-    min-height: auto;
-}
-
-.about h3 {
-    padding: 3px 0px;
-    color: #507c56;
-}
-
-.about p {
-    padding: 3px 0px;
-    color: black;
-    text-align: justify;
-}
-
-/* FLOPPYMEMBERS */
-.floppy {
-    background-color: #0e3b2e;
-    padding: 30px 25px;
-    text-align: center;
-}
-
-.floppy p {
-    color: #f6f1e4;
-    font-size: 15px;
-}
-
-/* PLACE POPUP */
-
-body.modal-open {
-    overflow: hidden;
-}
-
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(14, 59, 46, 0.65);
-}
-
-.modal-card {
-    position: relative;
-    width: min(520px, 100%);
-    max-height: 100%;
-    overflow-y: auto;
-    background: #f7f8ee;
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-}
-
-.modal-map {
-    display: block;
-    width: 100%;
-    height: 240px;
-    border: 0;
-    background: #dcecc9;
-}
-
-.modal-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 1;
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 50%;
-    background: #17453a;
-    color: white;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.modal-close:hover {
-    background: #0e3b2e;
-}
-
-.modal-body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 20px;
-}
-
-.modal-body h3 {
-    font-size: 20px;
-    overflow-wrap: anywhere;
-}
-
-.modal-body p {
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-.modal-body p.loading {
-    opacity: 0.6;
-}
-
-.modal-details {
-    list-style: none;
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 14px;
-    background: #fff;
-    border: 1px solid #b8d1a7;
-    border-radius: 14px;
-    font-size: 14px;
-}
-
-.modal-details li {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    overflow-wrap: anywhere;
-}
-
-.modal-details a {
-    color: #244e42;
-    font-weight: 600;
-}
-
-.detail-icon {
-    flex-shrink: 0;
-}
-
-.modal-note {
-    font-size: 12px;
-    color: #507c56;
-}
-
-.modal-directions {
-    align-self: stretch;
-    margin-top: 6px;
-    padding: 14px 20px;
-    border-radius: 999px;
-    background: #17453a;
-    color: white;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.modal-directions:hover {
-    background: #ffb31b;
-    color: #0e3b2e;
-}
-
-/* RESPONSIVE */
-
-/* TABLET & PHONE (max 768px) */
-@media (max-width: 768px) {
-
-    html { scroll-padding-top: 130px; }
-    body { overflow-x: hidden; }
-
-    /* NAVBAR */
-    .navbar {
-        width: 100%;
-        padding: 8px 0;
-        border-radius: 0;
+    function el(tag, cls, text) {
+        const node = document.createElement(tag);
+        if (cls) node.className = cls;
+        if (text != null) node.textContent = text;
+        return node;
     }
 
-    .nav-inner {
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 4px 12px;
+    function distanceM(lat1, lon1, lat2, lon2) {
+        const R = 6371000;
+        const rad = (d) => (d * Math.PI) / 180;
+        const a = Math.sin(rad(lat2 - lat1) / 2) ** 2 +
+            Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(a));
     }
 
-    .logo img { height: 40px; }
-
-    .nav-menu {
-        width: 100%;
-        gap: 6px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        list-style: none;
-        padding-bottom: 2px;
-        scrollbar-width: none;
-    }
-    .nav-menu::-webkit-scrollbar { display: none; }
-
-    .nav-item { flex-shrink: 0; }
-
-    .nav-links {
-        display: inline-block;
-        width: auto;
-        overflow: visible;
-        padding: 8px 14px;
-        font-size: 13px;
-        white-space: nowrap;
+    function fmtDist(m) {
+        return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(1)} km`;
     }
 
-    /* HERO */
-    .hero {
-        height: auto;
-        min-height: 0;
-        padding-bottom: 50px;
+    function onceVisible(node, fn, margin = '200px') {
+        if (!node) return;
+        if (!('IntersectionObserver' in window)) { fn(); return; }
+        const io = new IntersectionObserver((entries) => {
+            if (entries.some((e) => e.isIntersecting)) { io.disconnect(); fn(); }
+        }, { rootMargin: margin });
+        io.observe(node);
     }
 
-    .hero-content { margin-top: 0;
-                  padding-top: 130px;}
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-    .title-group { padding: 10px 16px 20px; }
+    // set by the popup section
+    const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
-    .discoverolongapo {
-        height: auto;
-        width: 100%;
-        max-width: 380px;
+    // curated link/card > place object
+    function entryFrom(link) {
+        const d = link.dataset;
+        return {
+            id: 'cur:' + d.query,
+            name: link.querySelector('h3').textContent,
+            label: link.querySelector('.tag')?.textContent || '',
+            cat: d.cat || 'destinations',
+            desc: d.desc || '',
+            query: d.query,
+            osm: d.osm,
+            lat: d.lat ? parseFloat(d.lat) : null,
+            lon: d.lon ? parseFloat(d.lon) : null,
+            tags: {}
+        };
     }
 
-    .search-wrap {
-        top: 0;
-        width: calc(100% - 32px);
+    let openPopup = () => {};
+
+    /* ========== PLACES (Overpass) ========== */
+
+    const LABELS = {
+        restaurant: 'Restaurant', cafe: 'Cafe', fast_food: 'Fast Food', bar: 'Bar', pub: 'Pub',
+        hotel: 'Hotel', hostel: 'Hostel', guest_house: 'Guest House', resort: 'Resort', motel: 'Motel',
+        cinema: 'Cinema', nightclub: 'Nightclub', sports_centre: 'Sports Center',
+        fitness_centre: 'Gym', water_park: 'Water Park', marina: 'Marina', theme_park: 'Theme Park',
+        park: 'Park', beach_resort: 'Beach Resort', attraction: 'Attraction', museum: 'Museum',
+        viewpoint: 'Viewpoint', gallery: 'Gallery'
+    };
+
+    // returns [category, label]
+    function classify(t) {
+        const a = t.amenity, tr = t.tourism, l = t.leisure;
+        if (['restaurant', 'cafe', 'fast_food', 'bar', 'pub'].includes(a)) return ['food', LABELS[a]];
+        if (['hotel', 'hostel', 'guest_house', 'resort', 'motel'].includes(tr)) return ['stay', LABELS[tr]];
+        if (['cinema', 'nightclub'].includes(a)) return ['activities', LABELS[a]];
+        if (['sports_centre', 'fitness_centre', 'water_park', 'marina'].includes(l)) return ['activities', LABELS[l]];
+        if (tr === 'theme_park') return ['activities', LABELS[tr]];
+        if (t.natural === 'beach') return ['destinations', 'Beach'];
+        if (l === 'beach_resort' || l === 'park') return ['destinations', LABELS[l]];
+        if (['attraction', 'museum', 'viewpoint', 'gallery'].includes(tr)) return ['destinations', LABELS[tr]];
+        if (t.historic) return ['destinations', 'Landmark'];
+        return ['destinations', 'Place'];
     }
-    .search-bar {
-        padding: 12px 20px;
-        font-size: 16px;
+
+    function subtitle(t) {
+        if (t.cuisine) {
+            const c = t.cuisine.split(';').map((s) => s.replace(/_/g, ' ')).join(', ');
+            return c.charAt(0).toUpperCase() + c.slice(1);
+        }
+        if (t['addr:street']) return t['addr:street'];
+        return 'Olongapo City';
     }
 
-    /* GENERAL SECTIONS */
-    .content-section { padding: 40px 16px; }
-    .content-section h2 { font-size: 24px; }
-    .promote { padding-top: 100px; }
-
-    /* POPULAR NOW */
-    .popular-list {
-        padding-left: 0;
-        padding-right: 0;
+    function buildQuery(lat, lon, radius, limit) {
+        const ar = `(around:${radius},${lat},${lon})`;
+        return `[out:json][timeout:30];(
+            nwr["name"]["amenity"~"^(restaurant|cafe|fast_food|bar|pub|cinema|nightclub)$"]${ar};
+            nwr["name"]["tourism"~"^(attraction|hotel|hostel|guest_house|resort|motel|museum|viewpoint|gallery|theme_park)$"]${ar};
+            nwr["name"]["leisure"~"^(park|beach_resort|sports_centre|fitness_centre|water_park|marina)$"]${ar};
+            nwr["name"]["natural"="beach"]${ar};
+            nwr["name"]["historic"]${ar};
+        );out center ${limit};`;
     }
 
-    .popular-items { gap: 12px; }
-    .rank { width: 28px; font-size: 24px; }
-    .popular-info { min-width: 0; }
-    .popular-info h3 { font-size: 15px; }
-    .popular-info p  { font-size: 13px; overflow-wrap: anywhere; }
+    async function overpass(query) {
+        const key = 'gogapo:' + query;
+        try {
+            const cached = sessionStorage.getItem(key);
+            if (cached) return JSON.parse(cached);
+        } catch (e) { /* storage unavailable, ignore */ }
 
-    /* NEAR YOU */
-    .location-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        let lastError;
+        for (let round = 0; round < 2; round++) {
+            for (const url of ENDPOINTS) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 15000);
+                try {
+                    const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(query), signal: ctrl.signal });
+                    if (!res.ok) throw new Error('the map data server answered HTTP ' + res.status);
+                    const json = await res.json();
+                    try { sessionStorage.setItem(key, JSON.stringify(json)); } catch (e) { /* too big, ignore */ }
+                    return json;
+                } catch (err) {
+                    console.warn('Map data request failed at', url, err);
+                    if (err.name === 'AbortError') lastError = new Error('the map data server took too long');
+                    else if (err instanceof SyntaxError) lastError = new Error('the map data server sent an unreadable reply');
+                    else if (err instanceof TypeError) lastError = new Error('could not reach the map data server');
+                    else lastError = err;
+                } finally {
+                    clearTimeout(timer);
+                }
+            }
+            await wait(1500); // busy server: pause, then retry once
+        }
+        throw lastError;
     }
-    .location { width: 100%; }
 
-    .nearby-list .distance { width: 60px; font-size: 14px; }
-
-    /* EXPLORE */
-    .explore-button { display: block; }
-    .explore-button ul {
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 0;
-        list-style: none;
+    async function fetchPlaces(lat, lon, radius, limit) {
+        const data = await overpass(buildQuery(lat, lon, radius, limit));
+        const seen = new Set();
+        const out = [];
+        for (const e of data.elements) {
+            const pLat = e.lat ?? e.center?.lat;
+            const pLon = e.lon ?? e.center?.lon;
+            if (pLat == null || pLon == null || !e.tags?.name) continue;
+            const id = e.type + e.id;
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const [cat, label] = classify(e.tags);
+            out.push({ id, name: e.tags.name, cat, label, sub: subtitle(e.tags), lat: pLat, lon: pLon, tags: e.tags });
+        }
+        return out;
     }
-    .explore-button .label { padding: 8px 14px; font-size: 13px; }
 
-    .explore-grid { grid-template-columns: 1fr; gap: 14px; }
+    /* ========== NEAR YOU ========== */
 
-    /* BUSINESS */
-    .checklist {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
+    const nearBtn = $('.location-header .location');
+    const nearStatus = $('#nearby-status');
+    const nearList = $('#nearby-list');
+
+    function renderNearList(places) {
+        nearList.replaceChildren();
+        places.forEach((p) => {
+            const li = el('li');
+            const a = el('a', 'popular-items');
+            a.href = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.addEventListener('click', (e) => {
+                if (e.ctrlKey || e.metaKey || e.shiftKey) return; // let "open in new tab" work
+                e.preventDefault();
+                openPopup(p);
+            });
+
+            const info = el('div', 'popular-info');
+            info.append(el('h3', null, p.name), el('p', null, p.sub));
+
+            a.append(el('span', 'distance', fmtDist(p.dist)), info, el('span', 'tag', p.label));
+            li.appendChild(a);
+            nearList.appendChild(li);
+        });
     }
-    .business-button {
-        display: block;
-        width: 100%;
-        text-align: center;
+
+    async function showNear(lat, lon, note, isUser) {
+        nearStatus.textContent = 'Searching nearby…';
+        nearList.replaceChildren();
+        try {
+            let places = [];
+            for (const r of [1000, 2000, 4000]) {
+                places = await fetchPlaces(lat, lon, r, 150);
+                places.forEach((p) => { p.dist = distanceM(lat, lon, p.lat, p.lon); p.fromUser = isUser; });
+                places.sort((a, b) => a.dist - b.dist);
+                if (places.length >= 8) break;
+            }
+            places = places.slice(0, 15);
+            if (!places.length) {
+                nearStatus.textContent = `${note} No places found around here yet.`;
+                return;
+            }
+            nearStatus.textContent = `${note} Showing the ${places.length} closest places. Tap one for details.`;
+            renderNearList(places);
+        } catch (err) {
+            console.error(err);
+            nearStatus.textContent = `Could not load nearby places (${err.message}). Check your internet, then tap "Use my location" to try again.`;
+        }
     }
-    .business-section ul { padding: 0; }
-    .business-section li { padding: 8px 0; }
 
-    /* ABOUT */
-    .about p { text-align: left; }
-
-    /* POPUP */
-    .modal {
-        padding: 0;
-        align-items: flex-end;
+    function geoMessage(err) {
+        const fileTip = location.protocol === 'file:'
+            ? ' Tip: browsers often block location on pages opened as a file. Open the site from localhost or HTTPS.'
+            : '';
+        if (err.code === 1) return 'Location access is blocked, so this shows places around Olongapo City center. Allow location for this site in your browser, then try again.' + fileTip;
+        if (err.code === 3) return 'Getting your location timed out, so this shows places around Olongapo City center.' + fileTip;
+        return 'We could not find your location (is location turned on for your device?), so this shows places around Olongapo City center.' + fileTip;
     }
-    .modal-card {
-        width: 100%;
-        max-height: 92vh;
-        max-height: 92dvh;
-        border-radius: 24px 24px 0 0;
+
+    if (nearBtn && nearStatus && nearList) {
+        // default: city center
+        onceVisible($('#nearest'), () =>
+            showNear(CITY.lat, CITY.lon, 'Showing places around Olongapo City center. Tap "Use my location" for what is closest to you.', false));
+
+        nearBtn.addEventListener('click', () => {
+            if (!('geolocation' in navigator)) {
+                showNear(CITY.lat, CITY.lon, 'Your browser does not support location, so this shows places around Olongapo City center.', false);
+                return;
+            }
+            nearBtn.disabled = true;
+            nearBtn.textContent = 'Locating…';
+            nearStatus.textContent = 'Getting your location…';
+
+            const done = () => { nearBtn.disabled = false; nearBtn.textContent = 'Use my location'; };
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { latitude: lat, longitude: lon } = pos.coords;
+                    if (distanceM(lat, lon, CITY.lat, CITY.lon) > CITY_LIMIT_M) {
+                        await showNear(CITY.lat, CITY.lon, 'You seem to be outside Olongapo, so this shows places around the city center.', false);
+                    } else {
+                        await showNear(lat, lon, 'Based on your location.', true);
+                    }
+                    done();
+                },
+                async (err) => {
+                    await showNear(CITY.lat, CITY.lon, geoMessage(err), false);
+                    done();
+                },
+                { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+            );
+        });
     }
-    .modal-map { height: 200px; }
-    .modal-close { width: 40px; height: 40px; }
-    .modal-body { padding: 18px 16px 28px; }
-}
 
-/* SMALL PHONE (max 480px) */
-@media (max-width: 480px) {
+    /* ========== EXPLORE (curated cards: filter + search) ========== */
 
-    .content-section h2 { font-size: 22px; }
+    const grid = $('#explore-grid');
+    const exploreStatus = $('#explore-status');
+    const filterBtns = document.querySelectorAll('.explore-button .label');
+    const searchBar = $('.search-bar');
+    const cards = grid ? Array.from(grid.children) : [];
 
-    .popular-items { flex-wrap: wrap; }
-    .tag { margin-left: 40px; }
+    let filter = 'all';
+    let query = '';
 
-    .explore-card .tag,
-    .modal-body .tag { margin-left: 0; }
+    /* SEARCH SCORING: name match first, then category/description */
+    function scorePlace(p, q) {
+        const name = norm(p.name);
+        if (name === q) return 100;
+        if (name.startsWith(q)) return 80;
+        if (name.split(/\s+/).some((w) => w.startsWith(q))) return 60;
+        if (name.includes(q)) return 40;
+        const info = norm([p.label, p.desc].join(' '));
+        if (info.includes(q)) return 20;
+        const all = name + ' ' + info;
+        if (q.split(/\s+/).every((w) => all.includes(w))) return 10;
+        return 0;
+    }
 
-    .nearby-list .tag { margin-left: 72px; }
+    function setActiveFilter(value) {
+        filter = value;
+        filterBtns.forEach((b) => b.classList.toggle('active', b.dataset.filter === value));
+    }
 
-    .floppy { padding: 20px 16px; }
-    .floppy p { font-size: 13px; }
-}
+    function applyExplore() {
+        const q = norm(query);
+        const scored = cards.map((card, i) => ({ card, i, s: q ? scorePlace(entryFrom(card), q) : 1 }));
+        scored.sort((a, b) => b.s - a.s || a.i - b.i);
+
+        let visible = 0;
+        scored.forEach(({ card, s }) => {
+            const show = s > 0 && (filter === 'all' || card.dataset.cat === filter);
+            card.hidden = !show;
+            if (show) visible++;
+            grid.appendChild(card);
+        });
+
+        if (!visible) exploreStatus.textContent = 'No places match. Try another word or category.';
+        else if (q) exploreStatus.textContent = `${visible} result${visible === 1 ? '' : 's'} for "${query.trim()}"`;
+        else exploreStatus.textContent = '';
+    }
+
+    if (grid && exploreStatus) {
+        filterBtns.forEach((btn) => btn.addEventListener('click', () => {
+            setActiveFilter(btn.dataset.filter || 'all');
+            applyExplore();
+        }));
+    }
+
+    /* ---- hero search bar ---- */
+
+    const suggestBox = $('#search-suggest');
+    let current = [];
+    let activeIdx = -1;
+
+    // Popular Now + Explore cards, no duplicates
+    function searchEntries() {
+        const seen = new Set();
+        const out = [];
+        document.querySelectorAll('.popular-items[data-query], .explore-card[data-query]').forEach((link) => {
+            const e = entryFrom(link);
+            const key = norm(e.name);
+            if (seen.has(key)) return;
+            seen.add(key);
+            out.push(e);
+        });
+        return out;
+    }
+
+    function findSuggestions(text) {
+        const q = norm(text);
+        if (!q) return [];
+        return searchEntries()
+            .map((p) => ({ p, s: scorePlace(p, q) }))
+            .filter((x) => x.s > 0)
+            .sort((a, b) => b.s - a.s)
+            .slice(0, 6)
+            .map((x) => x.p);
+    }
+
+    function hideSuggest() {
+        suggestBox.hidden = true;
+        searchBar.setAttribute('aria-expanded', 'false');
+        activeIdx = -1;
+    }
+
+    function setActiveSuggest(i) {
+        activeIdx = i;
+        Array.from(suggestBox.children).forEach((li, n) => {
+            li.classList.toggle('active', n === i);
+            li.setAttribute('aria-selected', n === i ? 'true' : 'false');
+        });
+    }
+
+    function choose(i) {
+        const p = current[i];
+        if (!p) return;
+        hideSuggest();
+        searchBar.value = p.name;
+        openPopup(p);
+    }
+
+    function showSuggest() {
+        if (!searchBar.value.trim()) { hideSuggest(); return; }
+        current = findSuggestions(searchBar.value);
+        suggestBox.replaceChildren();
+        if (!current.length) {
+            suggestBox.appendChild(el('li', 'suggest-empty', 'No matches. Try another word.'));
+        } else {
+            current.forEach((p, i) => {
+                const li = el('li', 'suggest-item');
+                li.setAttribute('role', 'option');
+                li.append(el('span', 'suggest-name', p.name), el('span', 'suggest-tag', p.label));
+                li.addEventListener('mousedown', (e) => { e.preventDefault(); choose(i); });
+                suggestBox.appendChild(li);
+            });
+        }
+        suggestBox.hidden = false;
+        searchBar.setAttribute('aria-expanded', 'true');
+        activeIdx = -1;
+    }
+
+    function runSearch() {
+        query = searchBar.value;
+        setActiveFilter('all');
+        hideSuggest();
+        applyExplore();
+        $('#recommendation').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    if (searchBar && suggestBox && grid && exploreStatus) {
+        searchBar.addEventListener('input', () => {
+            if (searchBar.value === '' && query) { query = ''; applyExplore(); }
+            showSuggest();
+        });
+        searchBar.addEventListener('focus', showSuggest);
+        searchBar.addEventListener('keydown', (e) => {
+            const n = current.length;
+            if (e.key === 'ArrowDown' && n) { e.preventDefault(); setActiveSuggest((activeIdx + 1) % n); }
+            else if (e.key === 'ArrowUp' && n) { e.preventDefault(); setActiveSuggest((activeIdx - 1 + n) % n); }
+            else if (e.key === 'Escape') { hideSuggest(); }
+            else if (e.key === 'Enter') { if (activeIdx >= 0) choose(activeIdx); else runSearch(); }
+        });
+        document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrap')) hideSuggest(); });
+    }
+
+    /* ========== DESCRIPTIONS ========== */
+
+    const NOUNS = {
+        'Fast Food': 'fast food spot', 'Place': 'local spot', 'Gym': 'gym',
+        'Guest House': 'guest house', 'Water Park': 'water park', 'Theme Park': 'theme park',
+        'Sports Center': 'sports center', 'Beach Resort': 'beach resort'
+    };
+
+    // openers per category
+    const INTROS = {
+        food: [
+            (n, a, t) => `${n} is ${a} ${t} where you can take a break and refuel while exploring Olongapo City.`,
+            (n, a, t) => `Craving something good? ${n} is ${a} ${t} that locals and visitors can drop in on.`,
+            (n, a, t) => `${n} is ${a} ${t} in Olongapo City, an easy stop for a satisfying meal.`
+        ],
+        stay: [
+            (n, a, t) => `${n} is ${a} ${t} that gives you a place to rest and recharge in Olongapo City.`,
+            (n, a, t) => `Need a base for your trip? ${n} is ${a} ${t} close to the city's sights, shops and Subic Bay.`,
+            (n, a, t) => `${n} is ${a} ${t} in Olongapo City, a handy place to settle in during your visit.`
+        ],
+        activities: [
+            (n, a, t) => `${n} is ${a} ${t} in Olongapo City, a fun way to fill part of your day.`,
+            (n, a, t) => `Looking for something to do? ${n} is ${a} ${t} worth adding to your plans.`,
+            (n, a, t) => `${n} is ${a} ${t} where you can unwind and enjoy your time in the city.`
+        ],
+        destinations: [
+            (n, a, t) => `${n} is ${a} ${t} in Olongapo City, worth a stop while you explore the area.`,
+            (n, a, t) => `Add ${n} to your list: ${a} ${t} that shows off a different side of Olongapo City.`,
+            (n, a, t) => `${n} is ${a} ${t} that is easy to fit into a day of discovering Olongapo City.`
+        ]
+    };
+
+    const CLOSERS = {
+        food: ['Come hungry!', 'A tasty stop on your Olongapo trip.', 'Great for a quick bite or a relaxed meal.'],
+        stay: ['A comfortable place to end your day.', 'Check ahead for rooms and rates.', 'A handy base for your trip.'],
+        activities: ['Perfect for a break from sightseeing.', 'Bring friends along!', 'A great way to add some fun to your day.'],
+        destinations: ['Don\'t forget your camera!', 'A nice spot to slow down and look around.', 'Worth a visit while you are nearby.']
+    };
+
+    // same place, same wording
+    function pick(list, seed) {
+        let h = 0;
+        for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+        return list[h % list.length];
+    }
+
+    const GENERIC_NAMES = ['eatery', 'canteen', 'restaurant', 'cafe', 'carinderia', 'bar', 'hotel', 'resort', 'park'];
+
+    // from OpenStreetMap 
+    function templateDescribe(p) {
+        const t = p.tags || {};
+        const cat = INTROS[p.cat] ? p.cat : 'destinations';
+        const noun = NOUNS[p.label] || (p.label || 'local spot').toLowerCase();
+        const article = /^[aeiou]/.test(noun) ? 'an' : 'a';
+
+        
+        const generic = GENERIC_NAMES.includes(p.name.trim().toLowerCase());
+        const opener = generic ? `This local ${noun}` : p.name;
+        const parts = [];
+
+        if (t.description) {
+            parts.push(t.description.replace(/\s+$/, '').replace(/([^.!?])$/, '$1.')); // written by OSM mappers
+        } else if (generic) {
+            parts.push(`${opener} in Olongapo City is an easy stop while you explore.`);
+        } else {
+            parts.push(pick(INTROS[cat], p.id)(opener, article, noun));
+        }
+
+        const street = t['addr:street'];
+        if (street) parts.push(`You can find it along ${street}.`);
+        if (t.cuisine) {
+            const c = t.cuisine.split(';').map((s) => s.replace(/_/g, ' ').trim()).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+            parts.push(`The menu leans toward ${c} cuisine.`);
+        }
+        if (p.dist != null) {
+            parts.push(p.fromUser
+                ? `It is about ${fmtDist(p.dist)} from where you are.`
+                : `It is about ${fmtDist(p.dist)} from Olongapo City center.`);
+        }
+        parts.push(pick(CLOSERS[cat], p.id + 'c'));
+        return parts.join(' ');
+    }
+
+    // details card
+    function detailsFor(p) {
+        const t = p.tags || {};
+        const rows = [];
+        const addr = [t['addr:housenumber'], t['addr:street'], t['addr:city'] || t['addr:suburb']].filter(Boolean).join(' ');
+        if (addr) rows.push(['📍', addr]);
+        if (t.opening_hours && t.opening_hours.length <= 80) rows.push(['🕒', t.opening_hours.replace(/;\s*/g, ' · ')]);
+        const phone = t.phone || t['contact:phone'];
+        if (phone) rows.push(['📞', phone]);
+        const web = t.website || t['contact:website'];
+        if (web && /^https?:\/\//i.test(web)) rows.push(['🌐', web, web]);
+        return rows;
+    }
+
+    function factsFor(p) {
+        const t = p.tags || {};
+        const lines = [`Name: ${p.name}`, `Type: ${p.label}`, 'Location: Olongapo City, Zambales, Philippines'];
+        if (t['addr:street']) lines.push(`Street: ${t['addr:street']}`);
+        if (t.cuisine) lines.push(`Cuisine: ${t.cuisine.replace(/[;_]/g, ' ')}`);
+        if (t.opening_hours) lines.push(`Opening hours: ${t.opening_hours}`);
+        if (t.description) lines.push(`Notes: ${t.description}`);
+        return lines.join('\n');
+    }
+
+    const aiEnabled = () => Boolean(AI_URL && AI_KEY && AI_MODEL);
+
+    async function aiDescribe(p) {
+        const cacheKey = 'gogapo:desc:' + p.id;
+        try {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) return cached;
+        } catch (e) { /* ignore */ }
+
+        const res = await fetch(AI_URL.replace(/\/$/, '') + '/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AI_KEY },
+            body: JSON.stringify({
+                model: AI_MODEL,
+                temperature: 0.3,
+                max_tokens: 120,
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You write short, friendly place descriptions for a tourism guide to Olongapo City, Philippines. ' +
+                            'Write 2 sentences, at most 45 words. Use ONLY the facts provided. Never invent menu items, ' +
+                            'history, prices, ratings, awards or opening years. If the facts are thin, keep it short and general.'
+                    },
+                    { role: 'user', content: factsFor(p) }
+                ]
+            })
+        });
+        if (!res.ok) throw new Error('AI HTTP ' + res.status);
+        const json = await res.json();
+        const text = json.choices?.[0]?.message?.content?.trim();
+        if (!text) throw new Error('AI returned nothing');
+        try { localStorage.setItem(cacheKey, text); } catch (e) { /* ignore */ }
+        return text;
+    }
+
+    /* ========== PLACE POPUP ========== */
+
+    const modal = $('#place-modal');
+    if (modal) {
+        const mTitle = $('#modal-title');
+        const mTag = $('#modal-tag');
+        const mDesc = $('#modal-desc');
+        const mNote = $('#modal-note');
+        const mDetails = $('#modal-details');
+        const mMap = $('#modal-map');
+        const mDir = $('#modal-directions');
+        let lastFocus = null;
+        let openToken = 0; // guards against stale lookups
+
+        // find coordinates by name
+        async function findByName(term) {
+            const clean = term.replace(/[^\w\s'-]/g, '');
+            const q = `[out:json][timeout:25];nwr["name"~"${clean}",i](around:10000,${CITY.lat},${CITY.lon});out center 10;`;
+            const data = await overpass(q);
+            const hit = data.elements.find((e) => (e.lat ?? e.center?.lat) != null);
+            return hit ? { lat: hit.lat ?? hit.center.lat, lon: hit.lon ?? hit.center.lon } : null;
+        }
+
+        function directionsFor(p, pos) {
+            const dest = pos ? `${pos.lat},${pos.lon}` : encodeURIComponent(p.query || `${p.name} Olongapo City`);
+            return `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+        }
+
+        // OSM embed
+        function showMap(pos) {
+            const dLon = 0.005, dLat = 0.003;
+            const bbox = [pos.lon - dLon, pos.lat - dLat, pos.lon + dLon, pos.lat + dLat].join('%2C');
+            mMap.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${pos.lat}%2C${pos.lon}`;
+            mMap.hidden = false;
+        }
+
+        async function loadMap(p, token) {
+            let pos = p.lat != null && p.lon != null ? { lat: p.lat, lon: p.lon } : null;
+            if (!pos && p.osm) {
+                try { pos = await findByName(p.osm); } catch (err) { console.error(err); }
+            }
+            if (token !== openToken || !pos) return;
+            showMap(pos);
+            mDir.href = directionsFor(p, pos);
+        }
+
+        function renderDetails(p) {
+            mDetails.replaceChildren();
+            const rows = detailsFor(p);
+            rows.forEach(([icon, text, href]) => {
+                const li = el('li');
+                li.append(el('span', 'detail-icon', icon));
+                if (href) {
+                    const a = el('a', null, text.replace(/^https?:\/\//i, '').replace(/\/$/, ''));
+                    a.href = href; a.target = '_blank'; a.rel = 'noopener';
+                    li.appendChild(a);
+                } else {
+                    li.appendChild(el('span', null, text));
+                }
+                mDetails.appendChild(li);
+            });
+            mDetails.hidden = !rows.length;
+        }
+
+        async function loadAi(p, token) {
+            mDesc.classList.add('loading');
+            try {
+                const text = await aiDescribe(p);
+                if (token !== openToken) return;
+                mDesc.textContent = text;
+                mNote.hidden = false;
+            } catch (err) {
+                console.warn('AI description failed, keeping the built-in one.', err);
+            } finally {
+                if (token === openToken) mDesc.classList.remove('loading');
+            }
+        }
+
+        openPopup = (p) => {
+            const token = ++openToken;
+            mTitle.textContent = p.name;
+            mTag.textContent = p.label || '';
+            mTag.hidden = !p.label;
+            mDesc.textContent = p.desc || templateDescribe(p);
+            mDesc.classList.remove('loading');
+            mNote.hidden = true;
+            renderDetails(p);
+            mMap.hidden = true;
+            mMap.src = 'about:blank';
+            mDir.href = directionsFor(p, p.lat != null ? p : null);
+
+            lastFocus = document.activeElement;
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+            $('.modal-close', modal).focus();
+
+            loadMap(p, token);
+            // curated text is kept
+            if (!p.desc && aiEnabled()) loadAi(p, token);
+        };
+
+        function closePopup() {
+            openToken++;
+            modal.hidden = true;
+            mMap.src = 'about:blank';
+            document.body.classList.remove('modal-open');
+            if (lastFocus) lastFocus.focus();
+        }
+
+        // Popular Now + Explore cards
+        [$('.popular-list'), grid].forEach((list) => {
+            if (!list) return;
+            list.addEventListener('click', (e) => {
+                const link = e.target.closest('[data-query]');
+                if (!link || e.ctrlKey || e.metaKey || e.shiftKey) return;
+                e.preventDefault();
+                openPopup(entryFrom(link));
+            });
+        });
+
+        modal.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closePopup(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closePopup(); });
+    }
+
+    /* ========== PROMOTE FORM ========== */
+
+    const form = $('.promote-form');
+    if (form) {
+        const note = $('.form-note', form);
+        const submit = $('button[type="submit"]', form);
+        const defaultNote = note.textContent;
+
+        const say = (msg, type) => { note.textContent = msg; note.className = 'form-note ' + (type || ''); };
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(form);
+            if (data.get('_gotcha')) return; // spam trap
+
+            if (FORM_ENDPOINT) {
+                submit.disabled = true;
+                say('Sending…');
+                try {
+                    const res = await fetch(FORM_ENDPOINT, {
+                        method: 'POST', body: data, headers: { Accept: 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    form.reset();
+                    say('Thanks! Your request was sent. We will email you after we review it.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    say('Something went wrong. Please try again in a moment.', 'error');
+                } finally {
+                    submit.disabled = false;
+                }
+            } else if (CONTACT_EMAIL) {
+                const body = Array.from(data)
+                    .filter(([k]) => k !== '_gotcha')
+                    .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`).join('\n');
+                window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('GoGapo business request')}&body=${encodeURIComponent(body)}`;
+                say('Your email app should open with the details filled in. Press send to finish.', 'success');
+            } else {
+                say('This form is not connected yet. Set FORM_ENDPOINT or CONTACT_EMAIL at the top of script.js.', 'error');
+            }
+        });
+
+        form.addEventListener('input', () => { if (note.textContent !== defaultNote) say(defaultNote); });
+    }
+})();
+

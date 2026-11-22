@@ -22,7 +22,7 @@
             <div class="section-content nav-inner">
                 <a href="#home" class="logo">
                     <!-- <h2>GoGapo</h2> -->
-                    <img src="Copy of LogoGoGapo.png" alt="GoGapo">
+                    <img src="Copy%20of%20LogoGoGapo.png" alt="GoGapo">
                 </a>
 
                 <ul class="nav-menu">
@@ -51,18 +51,22 @@
         <div class="hero-content">
 
             <div class="title-group">
-                <img src="DISCOVER (2).png" class="discoverolongapo" alt="DiscoverOlongapo">
+                <img src="DISCOVER%20(2).png" class="discoverolongapo" alt="DiscoverOlongapo">
                 <!-- <h2 class="Discover">Discover</h2> <h1 class="Olongapo"> Olongapo</h1> -->
             </div>
 
-            <input type="text" placeholder="Search places in Olongapo" class="search-bar"
-                aria-label="Search places in Olongapo" enterkeyhint="search">
+            <div class="search-wrap">
+                <input type="text" placeholder="Search places, food, hotels in Olongapo" class="search-bar"
+                    aria-label="Search places in Olongapo" enterkeyhint="search" autocomplete="off"
+                    role="combobox" aria-expanded="false" aria-controls="search-suggest" aria-autocomplete="list">
+                <ul id="search-suggest" class="search-suggest" role="listbox" hidden></ul>
+            </div>
 
         </div>
 
     </section>
 
-    <!--Popular Now (tap an item for the popup; edit the text and data-desc to your own picks)-->
+    <!--POPULAR NOW-->
     <section class="popular-section" id="popular">
         <section class="content-section">
             <div class="section-content">
@@ -180,9 +184,73 @@
                 </div>
 
                 <p id="explore-status" class="nearby-status" role="status" aria-live="polite"></p>
-                <div id="explore-grid" class="explore-grid"></div>
-                <div class="explore-more-wrap">
-                    <button id="explore-more" class="location" type="button" hidden>Show more</button>
+                <div id="explore-grid" class="explore-grid">
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Rizal+Triangle+Olongapo" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="destinations" data-query="Rizal Triangle, Olongapo City" data-osm="Rizal Triangle"
+                        data-desc="A small park surrounded by one of Olongapo's busiest districts. It is known for its bars, restaurants and nightlife, a legacy of the years when the nearby U.S. Naval Base Subic Bay was active.">
+                        <img src="rizal-triangle.jpg" alt="Rizal Triangle Park" loading="lazy">
+                        <span class="tag">Destination</span>
+                        <div class="explore-body">
+                            <h3>Rizal Triangle</h3>
+                            <p>A lively area for street food, bars and people-watching in the heart of the city.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Magsaysay+Drive+Olongapo" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="food" data-query="Magsaysay Drive, Olongapo City" data-osm="Magsaysay Drive"
+                        data-desc="Restaurants, caf&eacute;s and shops lined up along Magsaysay Drive, one of the city's main roads. An easy area to walk through when you are looking for a meal or a snack.">
+                        <img src="magsaysay-drive.jpg" alt="Shops and restaurants along Magsaysay Drive" loading="lazy">
+                        <span class="tag">Food</span>
+                        <div class="explore-body">
+                            <h3>Magsaysay Drive Eats</h3>
+                            <p>Restaurants, caf&eacute;s and shops lined up along the city's main road.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Barrio+Barretto+Olongapo" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="destinations" data-query="Barrio Barretto, Olongapo City" data-osm="Barretto"
+                        data-desc="A coastal barangay on Subic Bay with a long stretch of beachfront resorts, restaurants and bars. A common choice for a weekend swim, a seafood meal or a short stay by the sea.">
+                        <img src="barrio-barretto.jpg" alt="Beach at Barrio Barretto" loading="lazy">
+                        <span class="tag">Destination</span>
+                        <div class="explore-body">
+                            <h3>Barrio Barretto</h3>
+                            <p>A beachfront stretch with seaside dining, sunsets and places to stay.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Hotels+in+Olongapo+City" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="stay" data-query="Hotels in Olongapo City" data-osm=""
+                        data-desc="Hotels, inns and resorts across Olongapo City and along the Subic Bay shoreline. Check each place for rooms and rates before you go.">
+                        <img src="stay-and-relax.jpg" alt="A hotel in Olongapo City" loading="lazy">
+                        <span class="tag">Hotels &amp; Services</span>
+                        <div class="explore-body">
+                            <h3>Stay &amp; Relax</h3>
+                            <p>Hotels, inns and resorts for every budget, close to the city's best spots.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Subic+Bay" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="activities" data-query="Subic Bay" data-osm="Subic Bay"
+                        data-desc="Boat rides, beach days and outdoor fun around Subic Bay, with plenty to try for families and groups of friends.">
+                        <img src="subic-bay-adventures.jpg" alt="Water park near Subic Bay" loading="lazy">
+                        <span class="tag">Activities</span>
+                        <div class="explore-body">
+                            <h3>Subic Bay Adventures</h3>
+                            <p>Boat rides, beach days and outdoor fun around beautiful Subic Bay.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query=Street+food+Olongapo+City" target="_blank" rel="noopener"
+                        class="explore-card" data-cat="food" data-query="Street food, Olongapo City" data-osm=""
+                        data-desc="Grilled favorites, snacks and sweet treats served up by local vendors. A tasty way to get to know the city, one stall at a time.">
+                        <img src="street-food-crawl.jpg" alt="Street food stall" loading="lazy">
+                        <span class="tag">Food</span>
+                        <div class="explore-body">
+                            <h3>Street Food Crawl</h3>
+                            <p>Grilled favorites, snacks and sweet treats served up by local vendors.</p>
+                        </div>
+                    </a>
                 </div>
 
             </div>
@@ -258,6 +326,7 @@
                 <span class="tag" id="modal-tag"></span>
                 <h3 id="modal-title"></h3>
                 <p id="modal-desc"></p>
+                <ul id="modal-details" class="modal-details" hidden></ul>
                 <small id="modal-note" class="modal-note" hidden>Description written by AI. Details may not be exact.</small>
                 <a id="modal-directions" class="modal-directions" target="_blank" rel="noopener">Get Directions</a>
             </div>

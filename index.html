@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GoGapo is your guide to tourist spots, food, hotels and activities in Olongapo City, Zambales.">
 
     <title>GoGapo | Your Guide to Olongapo</title>
 
@@ -54,15 +55,14 @@
                 <!-- <h2 class="Discover">Discover</h2> <h1 class="Olongapo"> Olongapo</h1> -->
             </div>
 
-            <input type="text" placeholder="Search" class="search-bar">
+            <input type="text" placeholder="Search places in Olongapo" class="search-bar"
+                aria-label="Search places in Olongapo" enterkeyhint="search">
 
         </div>
 
     </section>
 
-    <!-- DESTINATION SECTION PLACEHOLDERS -->
-
-    <!--Popular Now-->
+    <!--Popular Now (tap an item for the popup; edit the text and data-desc to your own picks)-->
     <section class="popular-section" id="popular">
         <section class="content-section">
             <div class="section-content">
@@ -72,55 +72,65 @@
                 <ol class="popular-list">
 
                     <li>
-                        <a href="" class="popular-items">
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=SM+City+Olongapo+Central" target="_blank" rel="noopener"
+                            class="popular-items" data-query="SM City Olongapo Central" data-osm="SM City Olongapo"
+                            data-desc="A large mall near the city center with shops, restaurants, a supermarket and a cinema. A convenient first stop for visitors, and a popular place to eat, shop and hang out.">
                             <span class="rank">1</span>
                             <div class="popular-info">
-                                <h3>Gordon College</h3>
-                                <p>School ko ngani School ko ngani School ko ngani School ko ngani</p>
+                                <h3>SM City Olongapo Central</h3>
+                                <p>Shopping, dining and cinemas in the middle of the city.</p>
                             </div>
-                            <span class="tag">School</span>
+                            <span class="tag">Mall</span>
                         </a>
                     </li>
 
                     <li>
-                        <a href="" class="popular-items">
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Rizal+Triangle+Olongapo" target="_blank" rel="noopener"
+                            class="popular-items" data-query="Rizal Triangle, Olongapo City" data-osm="Rizal Triangle"
+                            data-desc="A small park surrounded by one of Olongapo's busiest districts. It is known for its bars, restaurants and nightlife, a legacy of the years when the nearby U.S. Naval Base Subic Bay was active.">
                             <span class="rank">2</span>
                             <div class="popular-info">
-                                <h3>Gordon College</h3>
-                                <p>School ko ngani School ko ngani School ko ngani School ko ngani</p>
+                                <h3>Rizal Triangle</h3>
+                                <p>The city's well-known dining and nightlife area.</p>
                             </div>
-                            <span class="tag">School</span>
+                            <span class="tag">Nightlife</span>
                         </a>
                     </li>
 
                     <li>
-                        <a href="" class="popular-items">
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Barrio+Barretto+Olongapo" target="_blank" rel="noopener"
+                            class="popular-items" data-query="Barrio Barretto, Olongapo City" data-osm="Barretto"
+                            data-desc="A coastal barangay on Subic Bay with a long stretch of beachfront resorts, restaurants and bars. A common choice for a weekend swim, a seafood meal or a short stay by the sea.">
                             <span class="rank">3</span>
                             <div class="popular-info">
-                                <h3>Gordon College</h3>
-                                <p>School ko ngani School ko ngani School ko ngani School ko ngani</p>
+                                <h3>Barrio Barretto</h3>
+                                <p>Beachfront resorts and seafood along Subic Bay.</p>
                             </div>
-                            <span class="tag">School</span>
+                            <span class="tag">Beach</span>
                         </a>
                     </li>
 
                     <li>
-                        <a href="" class="popular-items">
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Magsaysay+Drive+Olongapo" target="_blank" rel="noopener"
+                            class="popular-items" data-query="Magsaysay Drive, Olongapo City" data-osm="Magsaysay Drive"
+                            data-desc="One of Olongapo's main roads, lined with shops, eateries, banks and services. Many local transport routes pass through it, which makes it an easy landmark to navigate by.">
                             <span class="rank">4</span>
                             <div class="popular-info">
-                                <h3>Gordon College</h3>
-                                <p>School ko ngani School ko ngani School ko ngani School ko ngani</p>
+                                <h3>Magsaysay Drive</h3>
+                                <p>A busy main road lined with shops, eateries and services.</p>
                             </div>
-                            <span class="tag">School</span>
+                            <span class="tag">Street</span>
                         </a>
                     </li>
 
                     <li>
-                        <a href="" class="popular-items">
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Gordon+College+Olongapo" target="_blank" rel="noopener"
+                            class="popular-items" data-query="Gordon College, Olongapo City" data-osm="Gordon College"
+                            data-desc="A local college in Olongapo City and one of its best-known schools.">
                             <span class="rank">5</span>
                             <div class="popular-info">
                                 <h3>Gordon College</h3>
-                                <p>School ko ngani School ko ngani School ko ngani School ko ngani</p>
+                                <p>One of the city's best-known schools.</p>
                             </div>
                             <span class="tag">School</span>
                         </a>
@@ -143,6 +153,10 @@
 
                 <p>Discover places and businesses around your location.</p>
 
+                <p id="nearby-status" class="nearby-status" role="status" aria-live="polite"></p>
+                <ul id="nearby-list" class="nearby-list"></ul>
+                <p class="nearby-credit">Place data © OpenStreetMap contributors</p>
+
             </div>
         </section>
     </section>
@@ -156,13 +170,19 @@
 
                 <div class="explore-button">
                     <ul>
-                        <li><button class="label active" type="button">All</button></li>
-                        <li><button class="label" type="button">Destinations</button></li>
-                        <li><button class="label" type="button">Food</button></li>
-                        <li><button class="label" type="button">Hotels & Services</button></li>
-                        <li><button class="label" type="button">Activities</button></li>
+                        <li><button class="label active" type="button" data-filter="all">All</button></li>
+                        <li><button class="label" type="button" data-filter="destinations">Destinations</button></li>
+                        <li><button class="label" type="button" data-filter="food">Food</button></li>
+                        <li><button class="label" type="button" data-filter="stay">Hotels &amp; Services</button></li>
+                        <li><button class="label" type="button" data-filter="activities">Activities</button></li>
 
                     </ul>
+                </div>
+
+                <p id="explore-status" class="nearby-status" role="status" aria-live="polite"></p>
+                <div id="explore-grid" class="explore-grid"></div>
+                <div class="explore-more-wrap">
+                    <button id="explore-more" class="location" type="button" hidden>Show more</button>
                 </div>
 
             </div>
@@ -228,6 +248,23 @@
         <p>GoGapo © 2026. Made by FloppyMembers.</p>
     </footer>
 
+    <!-- PLACE POPUP -->
+    <div class="modal" id="place-modal" hidden>
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <button class="modal-close" type="button" aria-label="Close" data-close>×</button>
+            <iframe id="modal-map" class="modal-map" title="Map of the place" loading="lazy" hidden></iframe>
+            <div class="modal-body">
+                <span class="tag" id="modal-tag"></span>
+                <h3 id="modal-title"></h3>
+                <p id="modal-desc"></p>
+                <small id="modal-note" class="modal-note" hidden>Description written by AI. Details may not be exact.</small>
+                <a id="modal-directions" class="modal-directions" target="_blank" rel="noopener">Get Directions</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
 </body>
 
 </html>

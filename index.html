@@ -1,171 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GoGapo is your guide to tourist spots, food, hotels and activities in Olongapo City, Zambales.">
-
-    <title>GoGapo | Your Guide to Olongapo</title>
-
-    <link rel="stylesheet" href="style.css">
-
-</head>
-
-<body>
-
-    <!-- HERO SECTION -->
-    <section class="hero" id="home">
-
-        <!-- NAVIGATION BAR -->
-        <nav class="navbar">
-            <div class="section-content nav-inner">
-                <a href="#home" class="logo">
-                    <!-- <h2>GoGapo</h2> -->
-                    <img src="Copy%20of%20LogoGoGapo.png" alt="GoGapo">
-                </a>
-
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="#about" class="nav-links">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#popular" class="nav-links">Popular</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#nearest" class="nav-links">Near You</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#recommendation" class="nav-links">Explore</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#business" class="nav-links">Promote Your Business</a>
-                    </li>
-
-                </ul>
-            </div>
-        </nav>
-
-
-        <!-- MAIN TITLE -->
-        <div class="hero-content">
-
-            <div class="title-group">
-                <img src="DISCOVER%20(2).png" class="discoverolongapo" alt="DiscoverOlongapo">
-                <!-- <h2 class="Discover">Discover</h2> <h1 class="Olongapo"> Olongapo</h1> -->
-            </div>
-
-            <div class="search-wrap">
-                <input type="text" placeholder="Search places, food, hotels in Olongapo" class="search-bar"
-                    aria-label="Search places in Olongapo" enterkeyhint="search" autocomplete="off"
-                    role="combobox" aria-expanded="false" aria-controls="search-suggest" aria-autocomplete="list">
-                <ul id="search-suggest" class="search-suggest" role="listbox" hidden></ul>
-            </div>
-
-        </div>
-
-    </section>
-
-    <!--POPULAR NOW-->
-    <section class="popular-section" id="popular">
-        <section class="content-section">
-            <div class="section-content">
-                <h2>Popular Now</h2>
-                <p>Explore the most popular destinations in Olongapo.</p>
-
-                <ol class="popular-list">
-
-                    <li>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query=SM+City+Olongapo+Central" target="_blank" rel="noopener"
-                            class="popular-items" data-query="SM City Olongapo Central" data-osm="SM City Olongapo"
-                            data-desc="A large mall near the city center with shops, restaurants, a supermarket and a cinema. A convenient first stop for visitors, and a popular place to eat, shop and hang out.">
-                            <span class="rank">1</span>
-                            <div class="popular-info">
-                                <h3>SM City Olongapo Central</h3>
-                                <p>Shopping, dining and cinemas in the middle of the city.</p>
-                            </div>
-                            <span class="tag">Mall</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Rizal+Triangle+Olongapo" target="_blank" rel="noopener"
-                            class="popular-items" data-query="Rizal Triangle, Olongapo City" data-osm="Rizal Triangle"
-                            data-desc="A small park surrounded by one of Olongapo's busiest districts. It is known for its bars, restaurants and nightlife, a legacy of the years when the nearby U.S. Naval Base Subic Bay was active.">
-                            <span class="rank">2</span>
-                            <div class="popular-info">
-                                <h3>Rizal Triangle</h3>
-                                <p>The city's well-known dining and nightlife area.</p>
-                            </div>
-                            <span class="tag">Nightlife</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Barrio+Barretto+Olongapo" target="_blank" rel="noopener"
-                            class="popular-items" data-query="Barrio Barretto, Olongapo City" data-osm="Barretto"
-                            data-desc="A coastal barangay on Subic Bay with a long stretch of beachfront resorts, restaurants and bars. A common choice for a weekend swim, a seafood meal or a short stay by the sea.">
-                            <span class="rank">3</span>
-                            <div class="popular-info">
-                                <h3>Barrio Barretto</h3>
-                                <p>Beachfront resorts and seafood along Subic Bay.</p>
-                            </div>
-                            <span class="tag">Beach</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Magsaysay+Drive+Olongapo" target="_blank" rel="noopener"
-                            class="popular-items" data-query="Magsaysay Drive, Olongapo City" data-osm="Magsaysay Drive"
-                            data-desc="One of Olongapo's main roads, lined with shops, eateries, banks and services. Many local transport routes pass through it, which makes it an easy landmark to navigate by.">
-                            <span class="rank">4</span>
-                            <div class="popular-info">
-                                <h3>Magsaysay Drive</h3>
-                                <p>A busy main road lined with shops, eateries and services.</p>
-                            </div>
-                            <span class="tag">Street</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query=Gordon+College+Olongapo" target="_blank" rel="noopener"
-                            class="popular-items" data-query="Gordon College, Olongapo City" data-osm="Gordon College"
-                            data-desc="A local college in Olongapo City and one of its best-known schools.">
-                            <span class="rank">5</span>
-                            <div class="popular-info">
-                                <h3>Gordon College</h3>
-                                <p>One of the city's best-known schools.</p>
-                            </div>
-                            <span class="tag">School</span>
-                        </a>
-                    </li>
-                </ol>
-
-            </div>
-        </section>
-    </section>
-
-    <!--Near You-->
-    <section class="nearyou-section" id="nearest">
-        <section class="content-section">
-            <div class="section-content">
-
-                <div class="location-header">
-                    <h2>Locations Near You</h2>
-                    <button class="location" type="button">Use my location</button>
-                </div>
-
-                <p>Discover places and businesses around your location.</p>
-
-                <p id="nearby-status" class="nearby-status" role="status" aria-live="polite"></p>
-                <ul id="nearby-list" class="nearby-list"></ul>
-                <p class="nearby-credit">Place data © OpenStreetMap contributors</p>
-
-            </div>
-        </section>
-    </section>
-
-    <!--Explore-->
+ <!--Explore-->
     <section class="recommendation-section" id="recommendation">
         <section class="content-section">
             <div class="section-content">
@@ -189,7 +22,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Rizal+Triangle+Olongapo" target="_blank" rel="noopener"
                         class="explore-card" data-cat="destinations" data-query="Rizal Triangle, Olongapo City" data-osm="Rizal Triangle"
                         data-desc="A small park surrounded by one of Olongapo's busiest districts. It is known for its bars, restaurants and nightlife, a legacy of the years when the nearby U.S. Naval Base Subic Bay was active.">
-                        <img src="rizal-triangle.jpg" alt="Rizal Triangle Park" loading="lazy">
+                        <img src="rizal-triangle.png" alt="Rizal Triangle Park" loading="lazy">
                         <span class="tag">Destination</span>
                         <div class="explore-body">
                             <h3>Rizal Triangle</h3>
@@ -200,7 +33,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Magsaysay+Drive+Olongapo" target="_blank" rel="noopener"
                         class="explore-card" data-cat="food" data-query="Magsaysay Drive, Olongapo City" data-osm="Magsaysay Drive"
                         data-desc="Restaurants, caf&eacute;s and shops lined up along Magsaysay Drive, one of the city's main roads. An easy area to walk through when you are looking for a meal or a snack.">
-                        <img src="magsaysay-drive.jpg" alt="Shops and restaurants along Magsaysay Drive" loading="lazy">
+                        <img src="magsaysay-drive.png" alt="Shops and restaurants along Magsaysay Drive" loading="lazy">
                         <span class="tag">Food</span>
                         <div class="explore-body">
                             <h3>Magsaysay Drive Eats</h3>
@@ -211,7 +44,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Barrio+Barretto+Olongapo" target="_blank" rel="noopener"
                         class="explore-card" data-cat="destinations" data-query="Barrio Barretto, Olongapo City" data-osm="Barretto"
                         data-desc="A coastal barangay on Subic Bay with a long stretch of beachfront resorts, restaurants and bars. A common choice for a weekend swim, a seafood meal or a short stay by the sea.">
-                        <img src="barrio-barretto.jpg" alt="Beach at Barrio Barretto" loading="lazy">
+                        <img src="barretto-beach.jpg" alt="Beach at Barrio Barretto" loading="lazy">
                         <span class="tag">Destination</span>
                         <div class="explore-body">
                             <h3>Barrio Barretto</h3>
@@ -222,7 +55,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Hotels+in+Olongapo+City" target="_blank" rel="noopener"
                         class="explore-card" data-cat="stay" data-query="Hotels in Olongapo City" data-osm=""
                         data-desc="Hotels, inns and resorts across Olongapo City and along the Subic Bay shoreline. Check each place for rooms and rates before you go.">
-                        <img src="stay-and-relax.jpg" alt="A hotel in Olongapo City" loading="lazy">
+                        <img src="stay-relax.png" alt="A hotel in Olongapo City" loading="lazy">
                         <span class="tag">Hotels &amp; Services</span>
                         <div class="explore-body">
                             <h3>Stay &amp; Relax</h3>
@@ -233,7 +66,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Subic+Bay" target="_blank" rel="noopener"
                         class="explore-card" data-cat="activities" data-query="Subic Bay" data-osm="Subic Bay"
                         data-desc="Boat rides, beach days and outdoor fun around Subic Bay, with plenty to try for families and groups of friends.">
-                        <img src="subic-bay-adventures.jpg" alt="Water park near Subic Bay" loading="lazy">
+                        <img src="subic-bay.png" alt="Water park near Subic Bay" loading="lazy">
                         <span class="tag">Activities</span>
                         <div class="explore-body">
                             <h3>Subic Bay Adventures</h3>
@@ -244,7 +77,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&amp;query=Street+food+Olongapo+City" target="_blank" rel="noopener"
                         class="explore-card" data-cat="food" data-query="Street food, Olongapo City" data-osm=""
                         data-desc="Grilled favorites, snacks and sweet treats served up by local vendors. A tasty way to get to know the city, one stall at a time.">
-                        <img src="street-food-crawl.jpg" alt="Street food stall" loading="lazy">
+                        <img src="street-food.png" alt="Street food stall" loading="lazy">
                         <span class="tag">Food</span>
                         <div class="explore-body">
                             <h3>Street Food Crawl</h3>
@@ -256,84 +89,3 @@
             </div>
         </section>
     </section>
-
-    <!--PROMOTE YOUR BUSINESS-->
-    <section class="business-section" id="business">
-        <section class="content-section">
-            <div class="section-content">
-
-                <div class="checklist">
-                    <div class="business-header">
-                        <p class="small-title">FOR LOCAL BUSINESS OWNERS</p>
-
-
-                        <h2>Own a business in Olongapo?</h2>
-
-                        <p class="business-description">
-                            Let more people discover your store.
-                            Feature your business on GoGapo and help
-                            locals and visitors find what you offer.
-                        </p>
-
-                        <a href="promote.html" class="business-button">
-                            Promote Your Business
-                        </a>
-
-                    </div>
-
-                    <ul>
-                        <li>✓ Reach more potential customers</li>
-                        <li>✓ Showcase your products and services</li>
-                        <li>✓ Help people discover your location</li>
-                    </ul>
-                </div>
-
-            </div>
-        </section>
-    </section>
-
-    <!-- ABOUT -->
-
-    <section id="about" class="content-section">
-        <div class="section-content">
-            <div class="about">
-                <h2>About GoGapo</h2>
-                <h3>Your guide to discovering Olongapo City.</h3>
-
-                <p> GoGapo is a convenient and accessible guide for anyone who wants to explore Olongapo City,
-                    Zambales.
-                    It brings together tourist destinations, food spots, hotels, local activities and upcoming
-                    events in one place,
-                    so you can discover what the city has to offer and plan your visit with ease.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- FLOPPYMEMBERS -->
-
-    <footer class="floppy">
-        <p>GoGapo © 2026. Made by FloppyMembers.</p>
-    </footer>
-
-    <!-- PLACE POPUP -->
-    <div class="modal" id="place-modal" hidden>
-        <div class="modal-backdrop" data-close></div>
-        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <button class="modal-close" type="button" aria-label="Close" data-close>×</button>
-            <iframe id="modal-map" class="modal-map" title="Map of the place" loading="lazy" hidden></iframe>
-            <div class="modal-body">
-                <span class="tag" id="modal-tag"></span>
-                <h3 id="modal-title"></h3>
-                <p id="modal-desc"></p>
-                <ul id="modal-details" class="modal-details" hidden></ul>
-                <small id="modal-note" class="modal-note" hidden>Description written by AI. Details may not be exact.</small>
-                <a id="modal-directions" class="modal-directions" target="_blank" rel="noopener">Get Directions</a>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js" defer></script>
-</body>
-
-</html>
